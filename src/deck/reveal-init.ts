@@ -8,7 +8,7 @@ export async function initDeck(): Promise<void> {
     buildSlides();
 
     await Reveal.initialize({
-        hash: true,
+        hash: false,
         slideNumber: "c/t",
         progress: true,
         controls: true,

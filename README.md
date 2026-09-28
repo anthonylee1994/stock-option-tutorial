@@ -39,7 +39,7 @@ pnpm format     # prettier --write .
 ```
 src/
   main.tsx                  # 挂载 reveal + 计算器两个 root
-  app.tsx                   # 计算器 React 入口
+  app.tsx                   # react-router 路由 + 计算器 React 入口
   deck/
     reveal-init.ts          # reveal.js 配置
     slides.ts               # 以 ?raw 载入 Markdown，组装成 section
@@ -59,6 +59,18 @@ src/
     layout.less             # 两栏布局 + 计算器面板
     print.less              # 打印 / PDF
 ```
+
+## 路由
+
+翻页由 [react-router](https://reactrouter.com/) 接管，reveal.js 不再自己改 hash：
+
+| URL          | 说明                                   |
+| ------------ | -------------------------------------- |
+| `/`          | 重定向到 `/slide/0`                    |
+| `/slide/<n>` | 直接跳到第 `n` 页（扁平顺序，从 0 起） |
+| 其他         | 重定向到 `/slide/0`                    |
+
+键盘 / 箭头换页时 URL 会同步更新，浏览器前进、后退键亦可翻页。部署时需设置 SPA fallback（把未知路径 rewrite 到 `index.html`），否则直接访问深层链接会 404。
 
 ## 键盘操作（reveal.js 内置）
 

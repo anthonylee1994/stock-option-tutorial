@@ -17,8 +17,9 @@
 
 <div class="callout tip">先懂四式怎么对赌，再学怎么定月份和行权价。</div>
 
-1. **期权四式**：Long Call / Short Call / Long Put / Short Put
-2. **对赌关系**：同一张合约的两端，盈亏互为镜像
-3. **盈亏平衡点**：决定赢、输、要不要接货的那条线
-4. **三大策略**：Long Call / Long Put / Short Put 的月份与行权价
-5. **右侧计算器**：随时改日期、标的价、IV、利率试算
+1. **生活比喻**：用"付订金"和"买保险"先建立直觉
+2. **期权四式**：Long Call / Short Call / Long Put / Short Put
+3. **对赌关系**：同一张合约的两端，盈亏互为镜像
+4. **盈亏平衡点**：决定赢、输、要不要接货的那条线
+5. **三大策略**：Long Call / Long Put / Short Put 的月份与行权价
+6. **右侧计算器**：随时改日期、标的价、IV、利率试算

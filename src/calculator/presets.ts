@@ -83,7 +83,11 @@ export const presets: Array<CalcPreset | undefined> = [
     undefined,
     undefined,
     undefined,
-    // Part 1 · 期权四式与对赌关系（1.1–1.5 隐藏，1.6 起显示）
+    // Part 1 · 期权四式与对赌关系（1.1–1.9 隐藏，1.10 起显示）
+    undefined,
+    undefined,
+    undefined,
+    undefined,
     undefined,
     undefined,
     undefined,

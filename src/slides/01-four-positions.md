@@ -1,3 +1,51 @@
+## 打个比方：先付订金，锁定房价
+
+<p class="lead">你看中一套房，现价 <code>100 万</code>，但还拿不准要不要买。</p>
+
+<div class="callout tip">你跟业主说好：我先付 <strong>2 万订金</strong>，换取 <strong>3 个月内</strong>随时按 <strong>100 万</strong>买下的权利。到时不想买，订金不退，这事就算了。</div>
+
+<div class="example-grid">
+<div class="stat-card"><span class="stat-label">房子 → 标的</span><span class="stat-value">一套房</span></div>
+<div class="stat-card"><span class="stat-label">订金 → 权利金</span><span class="stat-value">2 万</span></div>
+<div class="stat-card"><span class="stat-label">约定价 → 行权价</span><span class="stat-value">100 万</span></div>
+<div class="stat-card"><span class="stat-label">3 个月 → 到期日</span><span class="stat-value">3 个月</span></div>
+</div>
+
+- 你花小钱买的是一个**选择权**：可以买，也可以不买。
+- 业主收了订金，就有**义务**在你要买时按 `100 万`卖给你。
+- 这就是一张 **Call（认购期权）**：你是买方，业主是卖方。
+
+---
+
+## 3 个月后：两种结局
+
+<div class="two-col"><div class="callout tip"><strong>房价涨到 120 万</strong><br/>你按约定用 <code>100 万</code>买下，马上值 <code>120 万</code>。<br/>赚 <code>120 − 100 − 2 = 18 万</code>。<br/>本钱 2 万，赚回 9 倍：这就是<strong>杠杆</strong>。</div><div class="callout danger"><strong>房价跌到 80 万</strong><br/>没人会用 <code>100 万</code>买一套 <code>80 万</code>的房。<br/>你选择<strong>放弃</strong>，只亏 <code>2 万</code>订金。<br/>最大亏损早就锁死：这就是<strong>风险有限</strong>。</div></div>
+
+<div class="formula">
+<div class="formula-line">房价要高于 100 + 2 = 102 万，你才真正赚钱</div>
+<div class="formula-result">这条线就是后面会讲的「盈亏平衡点」= 行权价 + 权利金</div>
+</div>
+
+- 业主那边刚好相反：房价没涨，他白赚 `2 万`；房价大涨，他少赚了涨幅。
+
+---
+
+## 再打个比方：Put 就像买保险
+
+<p class="lead">你手上有股票，现价 <code>100</code>，担心下个月大跌。</p>
+
+<div class="callout tip">你付 <strong>3 元保费</strong>买一张 Put：<strong>1 个月内</strong>，不管股价跌到多少，都可以按 <strong>95</strong> 卖出。</div>
+
+| 1 个月后股价 | 没买保险 | 买了 Put（行权价 95，权利金 3）   |
+| ------------ | -------- | --------------------------------- |
+| 涨到 120     | +20      | +17（保险没用上，白付 3 元保费）  |
+| 跌到 70      | −30      | −8（按 95 卖出：−5，再加保费 −3） |
+
+- 买 Put 的人 = **买保险的人**：付一点钱，换来"跌到底也有人按 95 接手"。
+- 卖 Put 的人 = **保险公司**：平时稳收保费，一旦大跌就要按 95 **接货**。
+
+---
+
 ## 什么是期权
 
 期权是一张**合约**：买方付出一笔**权利金**，换取在**到期日或之前**、按**行权价**买入（Call）或卖出（Put）标的股票的**权利**；卖方收取权利金，承担对应的**义务**。
@@ -7,6 +55,19 @@
 - **买方（Long）**：付权利金，最大亏损就是权利金。
 - **卖方（Short）**：收权利金，最大盈利就是权利金，但可能被行权买入（接货）或被行权卖出（交货）。
 - 每张美股合约对应 `100` 股标的股票，港股每只不同。
+
+---
+
+## 生活例子 ↔ 期权术语
+
+| 生活例子             | 期权术语       | 一句话                           |
+| -------------------- | -------------- | -------------------------------- |
+| 付订金锁定房价的买家 | **Long Call**  | 看涨：花小钱锁定买入价，涨了才买 |
+| 收了订金的业主       | **Short Call** | 收一笔钱，但涨了也只能按约定价卖 |
+| 给股票买保险的人     | **Long Put**   | 看跌 / 避险：花小钱锁定卖出价    |
+| 收保费的保险公司     | **Short Put**  | 收一笔钱，但跌了要按约定价接货   |
+
+<div class="callout tip">记住一句：<strong>买方付钱买"选择权"，卖方收钱担"义务"。</strong>买方最多亏掉付出的钱；卖方最多只赚收到的钱。</div>
 
 ---
 

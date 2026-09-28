@@ -1,5 +1,4 @@
 import Reveal from "reveal.js";
-import RevealHighlight from "reveal.js/plugin/highlight";
 import RevealMarkdown from "reveal.js/plugin/markdown";
 import RevealNotes from "reveal.js/plugin/notes";
 import {buildSlides} from "./slides";
@@ -17,6 +16,6 @@ export async function initDeck(): Promise<void> {
         height: 720,
         margin: 0.04,
         transition: "fade",
-        plugins: [RevealMarkdown, RevealHighlight, RevealNotes],
+        plugins: [RevealMarkdown, RevealNotes],
     });
 }

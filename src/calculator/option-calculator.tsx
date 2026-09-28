@@ -111,8 +111,8 @@ export const OptionCalculator = () => {
     if (!visible || !preset || !result) return null;
 
     const typeLabel = preset.optionType === "call" ? "Call" : "Put";
-    const leverage = marketPremium > 0 ? spot / marketPremium : 0;
-    const yieldPercent = strike > 0 ? (marketPremium / strike) * 100 : 0;
+    const leverage = result.price > 0 ? spot / result.price : 0;
+    const yieldPercent = strike > 0 ? (result.price / strike) * 100 : 0;
     const rangeStart = preset.valuationDate;
     const rangeEnd = preset.expiry;
     const rangeStartDay = toDayNumber(rangeStart);

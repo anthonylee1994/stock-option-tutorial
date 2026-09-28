@@ -131,7 +131,7 @@ export const OptionCalculator = () => {
             <div className="calc-title">价格计算器</div>
 
             <div className="calc-contract">
-                <span className="calc-contract-type">{typeLabel}</span>
+                <span className={`calc-contract-type calc-contract-type-${preset.optionType}`}>{typeLabel}</span>
                 <span className="calc-contract-item">
                     行权价<span className="calc-contract-value">{strike}</span>
                 </span>

@@ -1,0 +1,7 @@
+stock-option.md
+strategy.md
+PLAN.md
+classes/
+dist/
+node_modules/
+pnpm-lock.yaml

@@ -1,0 +1,19 @@
+@import "./tokens.less";
+
+@media print {
+    #calculator-root {
+        display: none !important;
+    }
+
+    body.calc-visible {
+        width: 100% !important;
+    }
+}
+
+html.print-pdf #calculator-root {
+    display: none !important;
+}
+
+html.print-pdf body.calc-visible {
+    width: auto !important;
+}

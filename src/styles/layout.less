@@ -23,17 +23,32 @@ body.calc-visible #calculator-root {
     padding: 20px 20px 16px;
     overflow-y: auto;
     border-left: 1px solid @border;
-    background: @surface;
+    background: linear-gradient(180deg, @surface, darken(@surface, 2%));
+    box-shadow: -18px 0 40px rgba(0, 0, 0, 0.35);
     color: @text;
+    scrollbar-width: thin;
+    scrollbar-color: @border transparent;
     font-family: @sans;
     font-size: 15px;
     line-height: 1.3;
 }
 
 .calc-title {
+    display: flex;
+    align-items: center;
+    gap: 0.5em;
     margin-bottom: 0.55em;
     font-size: 1.3em;
     font-weight: 700;
+
+    &::before {
+        content: "";
+        width: 8px;
+        height: 8px;
+        border-radius: 50%;
+        background: @long;
+        box-shadow: 0 0 0 4px fade(@long, 18%);
+    }
 }
 
 .calc-contract {
@@ -84,9 +99,10 @@ body.calc-visible #calculator-root {
     gap: 0.5em;
     margin-bottom: 0.85em;
     padding: 0.75em 0.9em;
-    border: 1px solid @border;
-    border-radius: 12px;
-    background: @surface-2;
+    border: 1px solid fade(@accent, 28%);
+    border-radius: 14px;
+    background: radial-gradient(160px 90px at 0% 0%, fade(@accent, 18%), transparent 70%), @surface-2;
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.25);
 }
 
 .calc-result-block {
@@ -108,6 +124,7 @@ body.calc-visible #calculator-root {
 }
 
 .calc-value {
+    font-variant-numeric: tabular-nums;
     font-family: @mono;
     font-size: 1.5em;
     font-weight: 700;
@@ -115,6 +132,7 @@ body.calc-visible #calculator-root {
 }
 
 .calc-distance {
+    font-variant-numeric: tabular-nums;
     font-family: @mono;
     font-size: 1.5em;
     font-weight: 700;
@@ -130,6 +148,8 @@ body.calc-visible #calculator-root {
 }
 
 .calc-greeks {
+    position: relative;
+    z-index: 5;
     display: grid;
     grid-template-columns: repeat(5, 1fr);
     gap: 0.3em;
@@ -151,6 +171,7 @@ body.calc-visible #calculator-root {
 }
 
 .calc-greek-value {
+    font-variant-numeric: tabular-nums;
     font-family: @mono;
     font-size: 0.8em;
 }
@@ -164,8 +185,20 @@ body.calc-visible #calculator-root {
     border-bottom: 1px dotted @muted;
 }
 
-.calc-greek-tip:hover::after,
-.calc-greek-tip:focus-visible::after {
+.calc-greek {
+    padding: 0.25em 0;
+    border-radius: 8px;
+    transition: background 0.2s ease;
+}
+
+.calc-greek-tip:hover,
+.calc-greek-tip:focus-visible {
+    outline: none;
+    background: fade(@accent, 10%);
+}
+
+.calc-greek-tip::after {
+    --tip-x: -50%;
     content: attr(data-tip);
     position: absolute;
     top: calc(100% + 6px);
@@ -174,7 +207,7 @@ body.calc-visible #calculator-root {
     box-sizing: border-box;
     width: 210px;
     padding: 0.55em 0.65em;
-    transform: translateX(-50%);
+    transform: translate(var(--tip-x), 6px);
     border: 1px solid rgba(77, 171, 247, 0.45);
     border-radius: 8px;
     background: @bg;
@@ -187,22 +220,36 @@ body.calc-visible #calculator-root {
     text-align: left;
     white-space: normal;
     pointer-events: none;
+    opacity: 0;
+    visibility: hidden;
+    transition:
+        opacity 0.18s ease,
+        transform 0.18s ease,
+        visibility 0.18s;
+}
+
+.calc-greek-tip:hover::after,
+.calc-greek-tip:focus-visible::after {
+    opacity: 1;
+    visibility: visible;
+    transform: translate(var(--tip-x), 0);
 }
 
 .calc-greek-tip:nth-child(1)::after,
 .calc-greek-tip:nth-child(2)::after {
+    --tip-x: 0;
     left: 0;
-    transform: none;
 }
 
 .calc-greek-tip:nth-child(4)::after,
 .calc-greek-tip:nth-child(5)::after {
+    --tip-x: 0;
     left: auto;
     right: 0;
-    transform: none;
 }
 
 .calc-toggle {
+    position: relative;
     display: grid;
     grid-template-columns: 1fr 1fr;
     gap: 0.4em;
@@ -211,9 +258,33 @@ body.calc-visible #calculator-root {
     border: 1px solid @border;
     border-radius: 10px;
     background: @surface-2;
+
+    &::before {
+        content: "";
+        position: absolute;
+        top: 0.25em;
+        bottom: 0.25em;
+        left: 0.25em;
+        width: calc(50% - 0.45em);
+        border-radius: 8px;
+        background: linear-gradient(135deg, @long, darken(@long, 12%));
+        box-shadow: 0 4px 14px fade(@long, 35%);
+        transition:
+            transform 0.35s cubic-bezier(0.34, 1.4, 0.64, 1),
+            background 0.35s ease,
+            box-shadow 0.35s ease;
+    }
+}
+
+.calc-toggle-short::before {
+    transform: translateX(calc(100% + 0.4em));
+    background: linear-gradient(135deg, @short, darken(@short, 12%));
+    box-shadow: 0 4px 14px fade(@short, 35%);
 }
 
 .calc-toggle-button {
+    position: relative;
+    z-index: 1;
     padding: 0.5em 0;
     border: 0;
     border-radius: 8px;
@@ -231,8 +302,8 @@ body.calc-visible #calculator-root {
     color: @text;
 }
 
-.calc-toggle-active {
-    background: @accent;
+.calc-toggle-active,
+.calc-toggle-active:hover {
     color: #08131f;
     font-weight: 700;
 }
@@ -252,19 +323,25 @@ body.calc-visible #calculator-root {
     border: 1px solid @border;
     border-radius: 10px;
     background: @surface-2;
-    opacity: 0.55;
+    opacity: 0.5;
+    transform: scale(0.97);
     transition:
-        opacity 0.15s ease,
-        border-color 0.15s ease;
+        opacity 0.3s ease,
+        border-color 0.3s ease,
+        box-shadow 0.3s ease,
+        transform 0.3s cubic-bezier(0.34, 1.4, 0.64, 1);
 }
 
 .calc-metric-active {
     border-color: rgba(77, 171, 247, 0.5);
+    box-shadow: 0 0 0 3px fade(@accent, 10%);
     opacity: 1;
+    transform: none;
 }
 
 .calc-metric-value {
     color: @text;
+    font-variant-numeric: tabular-nums;
     font-family: @mono;
     font-size: 1.05em;
     font-weight: 700;
@@ -360,11 +437,19 @@ body.calc-visible #calculator-root {
     color: @text;
     font-family: @mono;
     font-size: 0.95em;
+    transition:
+        border-color 0.2s ease,
+        box-shadow 0.2s ease;
+}
+
+.calc-field input:hover {
+    border-color: rgba(255, 255, 255, 0.22);
 }
 
 .calc-field input:focus {
     outline: none;
     border-color: @accent;
+    box-shadow: 0 0 0 3px fade(@accent, 22%);
 }
 
 .calc-range {
@@ -389,9 +474,21 @@ body.calc-visible #calculator-root {
     border: 0;
     border-radius: 50%;
     background: @accent;
+    box-shadow: 0 0 0 0 fade(@accent, 30%);
     cursor: pointer;
     appearance: none;
     -webkit-appearance: none;
+    transition:
+        transform 0.2s ease,
+        box-shadow 0.2s ease;
+}
+
+.calc-range input[type="range"]:hover::-webkit-slider-thumb {
+    box-shadow: 0 0 0 6px fade(@accent, 20%);
+}
+
+.calc-range input[type="range"]:active::-webkit-slider-thumb {
+    transform: scale(1.2);
 }
 
 .calc-range input[type="range"]::-moz-range-thumb {
@@ -436,11 +533,18 @@ body.calc-visible #calculator-root {
     font-size: 1em;
     cursor: pointer;
     transition:
-        border-color 0.15s ease,
-        color 0.15s ease;
+        border-color 0.2s ease,
+        color 0.2s ease,
+        background 0.2s ease,
+        transform 0.1s ease;
 }
 
 .calc-reset:hover {
     border-color: @accent;
+    background: fade(@accent, 8%);
     color: @accent;
+}
+
+.calc-reset:active {
+    transform: scale(0.98);
 }

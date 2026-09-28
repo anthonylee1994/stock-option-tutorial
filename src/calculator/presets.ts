@@ -107,7 +107,5 @@ export const presets: Array<CalcPreset | undefined> = [
     litePutShort,
     litePutShort,
     // Part 3 · 收尾
-    litePutShort,
-    litePutShort,
     undefined,
 ];

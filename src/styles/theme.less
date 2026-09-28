@@ -12,6 +12,10 @@ body,
     color: @text;
 }
 
+.reveal-viewport {
+    background: radial-gradient(1100px 620px at 8% -10%, fade(@accent, 13%), transparent 60%), radial-gradient(900px 560px at 105% 110%, fade(@long, 8%), transparent 60%), @bg;
+}
+
 .reveal {
     font-family: @sans;
     font-size: 24px;
@@ -28,8 +32,37 @@ body,
     color: rgba(255, 255, 255, 0.55);
 }
 
-.reveal .progress {
+.reveal .controls button {
+    transition:
+        opacity 0.2s ease,
+        color 0.2s ease,
+        transform 0.2s ease;
+}
+
+.reveal .controls button:hover {
     color: @accent;
+}
+
+.reveal .progress {
+    height: 4px;
+    background: rgba(255, 255, 255, 0.06);
+    color: @accent;
+}
+
+.reveal .progress span {
+    background: linear-gradient(90deg, @accent, @long);
+    box-shadow: 0 0 12px fade(@accent, 60%);
+    transition: transform 0.6s cubic-bezier(0.22, 0.8, 0.24, 1);
+}
+
+.reveal .slide-number {
+    padding: 4px 10px;
+    border: 1px solid @border;
+    border-radius: 999px;
+    background: fade(@surface, 80%);
+    color: @muted;
+    font-family: @mono;
+    font-size: 12px;
 }
 
 .reveal .slides section {
@@ -68,7 +101,7 @@ body,
     height: 4px;
     margin-top: 0.28em;
     border-radius: 2px;
-    background: @accent;
+    background: linear-gradient(90deg, @accent, fade(@accent, 0%));
 }
 
 .reveal h3 {
@@ -156,8 +189,20 @@ body,
     white-space: nowrap;
 }
 
+.reveal table thead th {
+    border-bottom: 1px solid fade(@accent, 45%);
+}
+
+.reveal table tbody tr {
+    transition: background 0.2s ease;
+}
+
 .reveal table tbody tr:nth-child(odd) {
     background: rgba(255, 255, 255, 0.03);
+}
+
+.reveal table tbody tr:hover {
+    background: fade(@accent, 9%);
 }
 
 .reveal table code {
@@ -180,29 +225,33 @@ body,
     margin: 0.6em 0;
     padding: 0.55em 0.9em;
     border-left: 4px solid @accent;
-    border-radius: 0 8px 8px 0;
-    background: @surface;
+    border-radius: 0 10px 10px 0;
+    background: linear-gradient(90deg, fade(@accent, 12%), fade(@surface, 60%) 70%);
     font-size: 0.9em;
 }
 
 .callout.tip {
     border-color: @long;
+    background: linear-gradient(90deg, fade(@long, 12%), fade(@surface, 60%) 70%);
 }
 
 .callout.warn {
     border-color: @warn;
+    background: linear-gradient(90deg, fade(@warn, 12%), fade(@surface, 60%) 70%);
 }
 
 .callout.danger {
     border-color: @danger;
+    background: linear-gradient(90deg, fade(@danger, 13%), fade(@surface, 60%) 70%);
 }
 
 .formula {
     margin: 0.6em 0;
     padding: 0.7em 1em;
     border: 1px solid @border;
-    border-radius: 8px;
-    background: @surface;
+    border-radius: 10px;
+    background: linear-gradient(135deg, @surface, fade(@surface-2, 70%));
+    box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.04);
     font-family: @mono;
     font-size: 1em;
 }
@@ -239,15 +288,51 @@ body,
 }
 
 .cover {
+    position: relative;
     display: flex;
     flex-direction: column;
     justify-content: center;
+    align-items: center;
     text-align: center;
     height: 100%;
 
+    &::before {
+        content: "";
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        z-index: -1;
+        width: 520px;
+        height: 520px;
+        margin: -260px 0 0 -260px;
+        border-radius: 50%;
+        background: radial-gradient(circle at 35% 40%, fade(@accent, 30%), transparent 60%), radial-gradient(circle at 70% 65%, fade(@long, 20%), transparent 55%);
+        filter: blur(40px);
+        animation: orb-drift 12s ease-in-out infinite;
+        pointer-events: none;
+    }
+
+    &::after {
+        content: "";
+        display: block;
+        width: 64px;
+        height: 4px;
+        margin-top: 0.2em;
+        border-radius: 2px;
+        background: linear-gradient(90deg, @accent, @long);
+    }
+
     > h1 {
-        font-size: 2.5em;
+        margin-bottom: 0.25em;
+        background: linear-gradient(100deg, @text 20%, @accent 45%, @long 60%, @text 85%);
+        background-size: 200% 100%;
+        background-clip: text;
+        -webkit-background-clip: text;
+        color: transparent;
+        font-size: 2.8em;
+        letter-spacing: 0.04em;
         text-align: center;
+        animation: shimmer 6s linear infinite;
     }
 }
 
@@ -276,9 +361,19 @@ body,
     flex-direction: column;
     padding: 0.5em 0.6em;
     border: 1px solid @border;
-    border-radius: 10px;
-    background: @surface;
+    border-radius: 12px;
+    background: linear-gradient(160deg, @surface, fade(@surface-2, 60%));
     overflow: hidden;
+    transition:
+        border-color 0.25s ease,
+        transform 0.25s ease,
+        box-shadow 0.25s ease;
+}
+
+.payoff:hover {
+    border-color: fade(@accent, 40%);
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.35);
+    transform: translateY(-2px);
 }
 
 .payoff-title {
@@ -344,8 +439,18 @@ body,
 .stat-card {
     padding: 0.55em 0.7em;
     border: 1px solid @border;
-    border-radius: 10px;
-    background: @surface;
+    border-radius: 12px;
+    background: linear-gradient(160deg, @surface, fade(@surface-2, 60%));
+    transition:
+        border-color 0.25s ease,
+        transform 0.25s ease,
+        box-shadow 0.25s ease;
+}
+
+.stat-card:hover {
+    border-color: fade(@accent, 45%);
+    box-shadow: 0 10px 26px rgba(0, 0, 0, 0.35);
+    transform: translateY(-3px);
 }
 
 .stat-card .stat-label {

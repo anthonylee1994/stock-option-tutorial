@@ -1,22 +1,12 @@
 import React from "react";
 import Reveal from "reveal.js";
+import {AnimatedNumber} from "./animated-number";
 import {calcYears, computeGreeks, crr} from "./pricing";
 import {PayoffChart} from "./payoff-chart";
 import {presets} from "./presets";
 import type {CalcPreset, Position} from "./types";
 
 const STEPS = 150;
-
-function formatNumber(value: number, digits = 4): string {
-    if (!Number.isFinite(value)) return "—";
-    return value.toFixed(digits);
-}
-
-function formatPercent(value: number, digits = 2): string {
-    if (!Number.isFinite(value)) return "—";
-    const fixed = value.toFixed(digits);
-    return value > 0 ? `+${fixed}%` : `${fixed}%`;
-}
 
 function toDayNumber(iso: string): number {
     const time = new Date(iso).getTime();
@@ -119,11 +109,11 @@ export const OptionCalculator = () => {
     const rangeEndDay = toDayNumber(rangeEnd);
     const sliderValue = clampDay(toDayNumber(valuationDate), rangeStartDay, rangeEndDay);
     const greeks = [
-        {label: "Delta", value: formatNumber(result.greeks.delta), hint: "标的资产价格每变动 1 个单位时，该期权持仓盈亏金额变化"},
-        {label: "Gamma", value: formatNumber(result.greeks.gamma), hint: "标的资产价格每变动 1 个单位时，该期权持仓的 Delta 值变化"},
-        {label: "Vega", value: formatNumber(result.greeks.vega), hint: "隐含波动率每变动 1% 时，该期权持仓盈亏金额变化"},
-        {label: "Theta", value: formatNumber(result.greeks.theta), hint: "时间每流逝一天，该期权持仓盈亏金额变化"},
-        {label: "Rho", value: formatNumber(result.greeks.rho), hint: "无风险利率每变动 1% 时，该期权持仓盈亏金额变化"},
+        {label: "Delta", value: result.greeks.delta, hint: "标的资产价格每变动 1 个单位时，该期权持仓盈亏金额变化"},
+        {label: "Gamma", value: result.greeks.gamma, hint: "标的资产价格每变动 1 个单位时，该期权持仓的 Delta 值变化"},
+        {label: "Vega", value: result.greeks.vega, hint: "隐含波动率每变动 1% 时，该期权持仓盈亏金额变化"},
+        {label: "Theta", value: result.greeks.theta, hint: "时间每流逝一天，该期权持仓盈亏金额变化"},
+        {label: "Rho", value: result.greeks.rho, hint: "无风险利率每变动 1% 时，该期权持仓盈亏金额变化"},
     ];
 
     return (
@@ -143,11 +133,15 @@ export const OptionCalculator = () => {
             <div className="calc-result">
                 <div className="calc-result-block">
                     <span className="calc-label">期权理论价格</span>
-                    <span className="calc-value">{formatNumber(result.price)}</span>
+                    <span className="calc-value">
+                        <AnimatedNumber value={result.price} />
+                    </span>
                 </div>
                 <div className="calc-result-block calc-result-right">
                     <span className="calc-label">距当前价格</span>
-                    <span className={result.distance >= 0 ? "calc-distance calc-up" : "calc-distance calc-down"}>{formatPercent(result.distance)}</span>
+                    <span className={result.distance >= 0 ? "calc-distance calc-up" : "calc-distance calc-down"}>
+                        <AnimatedNumber value={result.distance} digits={2} percent />
+                    </span>
                 </div>
             </div>
 
@@ -155,12 +149,14 @@ export const OptionCalculator = () => {
                 {greeks.map(greek => (
                     <div className="calc-greek calc-greek-tip" data-tip={greek.hint} tabIndex={0} key={greek.label}>
                         <span className="calc-label">{greek.label}</span>
-                        <span className="calc-greek-value">{greek.value}</span>
+                        <span className="calc-greek-value">
+                            <AnimatedNumber value={greek.value} />
+                        </span>
                     </div>
                 ))}
             </div>
 
-            <div className="calc-toggle">
+            <div className={position === "long" ? "calc-toggle" : "calc-toggle calc-toggle-short"}>
                 <button type="button" className={position === "long" ? "calc-toggle-button calc-toggle-active" : "calc-toggle-button"} onClick={() => setPosition("long")}>
                     买入 Long
                 </button>
@@ -172,11 +168,15 @@ export const OptionCalculator = () => {
             <div className="calc-metrics">
                 <div className={position === "long" ? "calc-metric calc-metric-active" : "calc-metric"}>
                     <span className="calc-label">杠杆率（买入）</span>
-                    <span className="calc-metric-value">{formatNumber(leverage, 2)} 倍</span>
+                    <span className="calc-metric-value">
+                        <AnimatedNumber value={leverage} digits={2} suffix=" 倍" />
+                    </span>
                 </div>
                 <div className={position === "short" ? "calc-metric calc-metric-active" : "calc-metric"}>
                     <span className="calc-label">厘数（卖出）</span>
-                    <span className="calc-metric-value">{formatNumber(yieldPercent, 2)}%</span>
+                    <span className="calc-metric-value">
+                        <AnimatedNumber value={yieldPercent} digits={2} suffix="%" />
+                    </span>
                 </div>
             </div>
 

@@ -6,6 +6,7 @@ import "reveal.js/reveal.css";
 import "reveal.js/reset.css";
 import "./styles/theme.less";
 import "./styles/layout.less";
+import "./styles/motion.less";
 import "./styles/print.less";
 
 const calculatorRoot = document.getElementById("calculator-root");

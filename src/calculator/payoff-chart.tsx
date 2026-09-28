@@ -60,6 +60,7 @@ export const PayoffChart = (props: PayoffChartProps) => {
     const spotPayoff = payoffAt(optionType, strike, premium, position, spot);
     const lineClass = position === "long" ? "line-long" : "line-short";
     const dotClass = position === "long" ? "dot-long" : "dot-short";
+    const drawKey = `${optionType}-${position}-${strike}`;
 
     return (
         <React.Fragment>
@@ -68,8 +69,8 @@ export const PayoffChart = (props: PayoffChartProps) => {
                 <line className="strike-line" x1={xOf(strike)} y1={PAD_TOP - 4} x2={xOf(strike)} y2={HEIGHT - PAD_BOTTOM} />
                 <line className="spot-line" x1={xOf(spot)} y1={PAD_TOP - 4} x2={xOf(spot)} y2={HEIGHT - PAD_BOTTOM} />
                 {showBreakeven ? <line className="breakeven-line" x1={xOf(breakeven)} y1={PAD_TOP - 4} x2={xOf(breakeven)} y2={HEIGHT - PAD_BOTTOM} /> : null}
-                <polyline className={lineClass} points={linePoints} fill="none" strokeWidth="3" strokeLinejoin="round" />
-                <circle className={dotClass} cx={xOf(spot)} cy={yOf(spotPayoff)} r="3.5" />
+                <polyline key={drawKey} className={`payoff-draw ${lineClass}`} pathLength={1} points={linePoints} fill="none" strokeWidth="3" strokeLinejoin="round" />
+                <circle key={`dot-${drawKey}`} className={`payoff-dot ${dotClass}`} cx={xOf(spot)} cy={yOf(spotPayoff)} r="3.5" />
                 {showBreakeven ? (
                     <text className="mark-label" x={clampLabelX(xOf(breakeven))} y="11" textAnchor="middle">
                         打和 {breakeven.toFixed(Number.isInteger(breakeven) ? 0 : 1)}

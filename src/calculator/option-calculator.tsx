@@ -119,11 +119,11 @@ export const OptionCalculator = () => {
     const rangeEndDay = toDayNumber(rangeEnd);
     const sliderValue = clampDay(toDayNumber(valuationDate), rangeStartDay, rangeEndDay);
     const greeks = [
-        {label: "Delta", value: formatNumber(result.greeks.delta)},
-        {label: "Gamma", value: formatNumber(result.greeks.gamma)},
-        {label: "Vega", value: formatNumber(result.greeks.vega)},
-        {label: "Theta", value: formatNumber(result.greeks.theta)},
-        {label: "Rho", value: formatNumber(result.greeks.rho)},
+        {label: "Delta", value: formatNumber(result.greeks.delta), hint: "标的资产价格每变动 1 个单位时，该期权持仓盈亏金额变化"},
+        {label: "Gamma", value: formatNumber(result.greeks.gamma), hint: "标的资产价格每变动 1 个单位时，该期权持仓的 Delta 值变化"},
+        {label: "Vega", value: formatNumber(result.greeks.vega), hint: "隐含波动率每变动 1% 时，该期权持仓盈亏金额变化"},
+        {label: "Theta", value: formatNumber(result.greeks.theta), hint: "时间每流逝一天，该期权持仓盈亏金额变化"},
+        {label: "Rho", value: formatNumber(result.greeks.rho), hint: "无风险利率每变动 1% 时，该期权持仓盈亏金额变化"},
     ];
 
     return (
@@ -153,7 +153,7 @@ export const OptionCalculator = () => {
 
             <div className="calc-greeks">
                 {greeks.map(greek => (
-                    <div className="calc-greek" key={greek.label}>
+                    <div className="calc-greek calc-greek-tip" data-tip={greek.hint} tabIndex={0} key={greek.label}>
                         <span className="calc-label">{greek.label}</span>
                         <span className="calc-greek-value">{greek.value}</span>
                     </div>

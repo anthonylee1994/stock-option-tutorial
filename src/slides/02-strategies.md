@@ -91,12 +91,11 @@
 <div class="example-grid">
 <div class="stat-card"><span class="stat-label">正股价</span><span class="stat-value">285</span></div>
 <div class="stat-card"><span class="stat-label">行权价</span><span class="stat-value">290</span></div>
-<div class="stat-card"><span class="stat-label">状态</span><span class="stat-value">轻微实值</span></div>
+<div class="stat-card"><span class="stat-label">状态</span><span class="stat-value">微价内</span></div>
 <div class="stat-card"><span class="stat-label">权利金</span><span class="stat-value">14</span></div>
 </div>
 
 - 打和点 `290 − 14 = 276`。
-- 近价 / 轻微实值，靠正股下跌赚内在值与时间差。
 
 ---
 

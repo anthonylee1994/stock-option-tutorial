@@ -1,6 +1,5 @@
 <div class="cover">
 <h1>股票期权教程</h1>
-<p class="cover-subtitle">四式对赌 · 月份与行权价策略</p>
 </div>
 
 ---

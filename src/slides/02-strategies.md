@@ -15,7 +15,7 @@
 
 | 实值程度 | 月份         |
 | -------- | ------------ |
-| OTM      | 即月         |
+| OTM      | 当月         |
 | ITM      | `2–4` 个月   |
 | DITM     | 视乎接受程度 |
 
@@ -27,40 +27,40 @@
 
 ## Long Call · 行权价策略
 
-| 状态 | 用途                     | 重点                       |
-| ---- | ------------------------ | -------------------------- |
-| ITM  | 攻守兼备，最平衡         | 股价不跌就有守             |
-| DITM | 可以当正股来持有         | 适合科技强势股或高信心交易 |
-| ATM  | 两头不到岸，只适合赌业绩 | 一般不优先                 |
-| OTM  | 有攻无守                 | 适合即月，价格敏感度高     |
+| 状态 | 用途                   | 重点                       |
+| ---- | ---------------------- | -------------------------- |
+| ITM  | 攻守兼备，最平衡       | 股价不跌就有守             |
+| DITM | 可以当作股票来持有     | 适合科技强势股或高信心交易 |
+| ATM  | 两头落空，只适合赌业绩 | 一般不优先                 |
+| OTM  | 有攻无守               | 适合当月，价格敏感度高     |
 
 ---
 
 ## Long Call · 例子：AMZN 240
 
-<p class="lead">正股 <code>260</code>，做 <code>240</code> 行权价（约 7.7% 价内），时间值 <code>8</code>，总成本 <code>28</code>。</p>
+<p class="lead">股价 <code>260</code>，做 <code>240</code> 行权价（约 7.7% 实值），时间值 <code>8</code>，总成本 <code>28</code>。</p>
 
 <div class="example-grid">
-<div class="stat-card"><span class="stat-label">正股价</span><span class="stat-value">260</span></div>
+<div class="stat-card"><span class="stat-label">股价</span><span class="stat-value">260</span></div>
 <div class="stat-card"><span class="stat-label">行权价</span><span class="stat-value">240</span></div>
 <div class="stat-card"><span class="stat-label">时间值</span><span class="stat-value">8</span></div>
 <div class="stat-card"><span class="stat-label">总成本</span><span class="stat-value">28</span></div>
 </div>
 
 - 内在值 `260 − 240 = 20`，时间值只占 `8`：成本大部分是实值。
-- 正股每升跌 `10`，这张 Call 大约动 `30–50%`。
-- 打和点 `268`：升不穿就打和或输钱。
+- 股价每涨跌 `10`，这张 Call 大约动 `30–50%`。
+- 盈亏平衡点 `268`：涨不破就持平或亏损。
 
 ---
 
 ## Long Call · 例子：GOOG 行权价深度
 
-<p class="lead">正股约 <code>330</code>。行权价拉得越远，防守力越弱。</p>
+<p class="lead">股价约 <code>330</code>。行权价拉得越远，防守力越弱。</p>
 
-| 行权价 | 位置       | 结果                                     |
-| ------ | ---------- | ---------------------------------------- |
-| `230`  | 深实值     | 伤害小，跌下来压力低                     |
-| `270`  | 较接近现价 | Delta 约 `0.8`，跌 `20–25` 权金输 `3` 成 |
+| 行权价 | 位置       | 结果                                          |
+| ------ | ---------- | --------------------------------------------- |
+| `230`  | 深实值     | 伤害小，跌下来压力低                          |
+| `270`  | 较接近现价 | Delta 约 `0.8`，跌 `20–25` 权利金亏损约 `30%` |
 
 <div class="callout warn">行权价不够深、时间不够长，就是最常见的输法。右侧计算器把 IV 与标的价拖一拖，看 Delta 与理论价怎么变。</div>
 
@@ -69,8 +69,8 @@
 ## Long Put · 月份策略
 
 - 做 `3` 个月以内。
-- **趁反弹先做**，不要跌得太深才追沽。
-- 正股反弹后仍有下跌空间时介入，赔率最好。
+- **趁反弹先做**，不要跌得太深才追空。
+- 股价反弹后仍有下跌空间时介入，赔率最好。
 
 <div class="callout tip">Long Put 是方向性做空，时间值在流失，所以月份要短、时机要准。</div>
 
@@ -79,38 +79,38 @@
 ## Long Put · 行权价策略
 
 - 不必太实值，反正看它跌。
-- 可以做轻微虚值，用较少成本搏较大跌幅。
+- 可以做轻微虚值，用较少成本博取较大跌幅。
 - 只有在明确看跌的标的上，才值得付时间值。
 
 ---
 
 ## Long Put · 例子：ADBE 290
 
-<p class="lead">正股 <code>285</code>，做 <code>290</code> Put，权利金 <code>14</code>。</p>
+<p class="lead">股价 <code>285</code>，做 <code>290</code> Put，权利金 <code>14</code>。</p>
 
 <div class="example-grid">
-<div class="stat-card"><span class="stat-label">正股价</span><span class="stat-value">285</span></div>
+<div class="stat-card"><span class="stat-label">股价</span><span class="stat-value">285</span></div>
 <div class="stat-card"><span class="stat-label">行权价</span><span class="stat-value">290</span></div>
-<div class="stat-card"><span class="stat-label">状态</span><span class="stat-value">微价内</span></div>
+<div class="stat-card"><span class="stat-label">状态</span><span class="stat-value">轻微实值</span></div>
 <div class="stat-card"><span class="stat-label">权利金</span><span class="stat-value">14</span></div>
 </div>
 
-- 打和点 `290 − 14 = 276`。
+- 盈亏平衡点 `290 − 14 = 276`。
 
 ---
 
 ## Short Put · 月份策略
 
-| 月份类型 | 时间        | 好处                     | 风险 / 限制             |
-| -------- | ----------- | ------------------------ | ----------------------- |
-| 远期     | `8–10` 个月 | 权利金厚，行权价可以压低 | 权利金缩得慢            |
-| 中期     | `5–6` 个月  | 权利金缩得快             | 收得比远期少，IV 高才做 |
-| 近期     | `2–4` 个月  | `3–7` 日可以赢对家一半   | 正股跌，期权容易扩一半  |
+| 月份类型 | 时间        | 好处                     | 风险 / 限制                  |
+| -------- | ----------- | ------------------------ | ---------------------------- |
+| 远期     | `8–10` 个月 | 权利金厚，行权价可以压低 | 权利金缩得慢                 |
+| 中期     | `5–6` 个月  | 权利金缩得快             | 收得比远期少，IV 高才做      |
+| 近期     | `2–4` 个月  | `3–7` 日可赚到一半权利金 | 股价一跌，期权价格容易涨一半 |
 
 - 主流做法：做 `3–4` 个月。
 - 永远要对标的有下跌的信心，**下方先做**，不要高追。
 - 不要同一只标的往上移仓（roll up）。
-- `50 IV` 做分水岭，低过不用问。
+- `50 IV` 作分水岭，低于此值不做。
 
 ---
 

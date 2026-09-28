@@ -173,7 +173,7 @@ export const OptionCalculator = () => {
                     </span>
                 </div>
                 <div className={position === "short" ? "calc-metric calc-metric-active" : "calc-metric"}>
-                    <span className="calc-label">厘数（卖出）</span>
+                    <span className="calc-label">权利金收益率（卖出）</span>
                     <span className="calc-metric-value">
                         <AnimatedNumber value={yieldPercent} digits={2} suffix="%" />
                     </span>

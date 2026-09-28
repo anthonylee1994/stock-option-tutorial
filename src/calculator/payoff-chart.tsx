@@ -73,7 +73,7 @@ export const PayoffChart = (props: PayoffChartProps) => {
                 <circle key={`dot-${drawKey}`} className={`payoff-dot ${dotClass}`} cx={xOf(spot)} cy={yOf(spotPayoff)} r="3.5" />
                 {showBreakeven ? (
                     <text className="mark-label" x={clampLabelX(xOf(breakeven))} y="11" textAnchor="middle">
-                        打和 {breakeven.toFixed(Number.isInteger(breakeven) ? 0 : 1)}
+                        平衡点 {breakeven.toFixed(Number.isInteger(breakeven) ? 0 : 1)}
                     </text>
                 ) : null}
                 <text className="spot-label" x={xOf(spot)} y={HEIGHT - 5} textAnchor="middle">

@@ -7,6 +7,8 @@ import {presets} from "./presets";
 import type {CalcPreset, Position} from "./types";
 
 const STEPS = 150;
+/** 杠杆率上限：深虚值期权临近到期时理论价趋近 0，杠杆会爆炸，超过此值只以「>9999」表示。 */
+const MAX_LEVERAGE = 9999;
 
 function toDayNumber(iso: string): number {
     const time = new Date(iso).getTime();
@@ -169,7 +171,7 @@ export const OptionCalculator = () => {
                 <div className={position === "long" ? "calc-metric calc-metric-active" : "calc-metric"}>
                     <span className="calc-label">杠杆率（买入）</span>
                     <span className="calc-metric-value">
-                        <AnimatedNumber value={leverage} digits={2} suffix=" 倍" />
+                        <AnimatedNumber value={leverage} digits={2} suffix=" 倍" max={MAX_LEVERAGE} />
                     </span>
                 </div>
                 <div className={position === "short" ? "calc-metric calc-metric-active" : "calc-metric"}>

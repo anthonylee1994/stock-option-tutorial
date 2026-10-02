@@ -48,14 +48,18 @@ interface AnimatedNumberProps {
     digits?: number;
     percent?: boolean;
     suffix?: string;
+    /** 超过此值时只显示上限（前面加「>」），避免出现 1e+23 这类无意义的科学记数。 */
+    max?: number;
 }
 
 export const AnimatedNumber = React.memo((props: AnimatedNumberProps) => {
-    const {value, digits = 4, percent = false, suffix = ""} = props;
-    const tweened = useTweenedNumber(value);
+    const {value, digits = 4, percent = false, suffix = "", max} = props;
+    const exceedsMax = max !== undefined && Number.isFinite(value) && value > max;
+    const tweened = useTweenedNumber(exceedsMax ? max : value);
     const text = percent ? formatPercent(tweened, digits) : formatNumber(tweened, digits);
     return (
         <React.Fragment>
+            {exceedsMax ? "> " : ""}
             {text}
             {suffix}
         </React.Fragment>

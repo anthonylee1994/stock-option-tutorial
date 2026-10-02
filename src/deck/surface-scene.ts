@@ -176,7 +176,7 @@ export function createSurface(container: HTMLElement, getScale: () => number): S
         scene.add(sprite);
     }
 
-    let values = new Float32Array(0);
+    let values: Float32Array = new Float32Array(0);
     const scratch = new THREE.Color();
 
     const applyType = (type: OptionType) => {

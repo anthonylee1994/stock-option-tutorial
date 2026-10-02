@@ -1,8 +1,6 @@
 ## 打个比方：先付订金，锁定房价
 
-<p class="lead">你看中一套房，现价 <code>100 万</code>，但还拿不准要不要买。</p>
-
-<div class="callout tip">你跟业主说好：我先付 <strong>2 万订金</strong>，换取 <strong>3 个月内</strong>随时按 <strong>100 万</strong>买下的权利。到时不想买，订金不退，这事就算了。</div>
+<div class="media-row"><div><p class="lead">你看中一套房，现价 <code>100 万</code>，但还拿不准要不要买。</p><div class="callout tip">你跟业主说好：我先付 <strong>2 万订金</strong>，换取 <strong>3 个月内</strong>随时按 <strong>100 万</strong>买下的权利。到时不想买，订金不退，这事就算了。</div></div><img class="illus" src="/images/call-house.svg" alt="付订金锁定房价的示意图" /></div>
 
 <div class="example-grid">
 <div class="stat-card"><span class="stat-label">房子 → 标的</span><span class="stat-value">一套房</span></div>
@@ -32,9 +30,7 @@
 
 ## 再打个比方：Put 就像买保险
 
-<p class="lead">你手上有股票，现价 <code>100</code>，担心下个月大跌。</p>
-
-<div class="callout tip">你付 <strong>3 元保费</strong>买一张 Put：<strong>1 个月内</strong>，不管股价跌到多少，都可以按 <strong>95</strong> 卖出。</div>
+<div class="media-row"><div><p class="lead">你手上有股票，现价 <code>100</code>，担心下个月大跌。</p><div class="callout tip">你付 <strong>3 元保费</strong>买一张 Put：<strong>1 个月内</strong>，不管股价跌到多少，都可以按 <strong>95</strong> 卖出。</div></div><img class="illus" src="/images/put-shield.svg" alt="Put 像保险，股价跌到 95 被托住的示意图" /></div>
 
 | 1 个月后股价 | 没买保险 | 买了 Put（行权价 95，权利金 3）   |
 | ------------ | -------- | --------------------------------- |
@@ -60,12 +56,9 @@
 
 ## 生活例子 ↔ 期权术语
 
-| 生活例子             | 期权术语       | 一句话                           |
-| -------------------- | -------------- | -------------------------------- |
-| 付订金锁定房价的买家 | **Long Call**  | 看涨：花小钱锁定买入价，涨了才买 |
-| 收了订金的业主       | **Short Call** | 收一笔钱，但涨了也只能按约定价卖 |
-| 给股票买保险的人     | **Long Put**   | 看跌 / 避险：花小钱锁定卖出价    |
-| 收保费的保险公司     | **Short Put**  | 收一笔钱，但跌了要按约定价接货   |
+<p class="lead">把鼠标移到卡片上（或按 Tab 聚焦），翻面看对应的期权术语。</p>
+
+<div class="flip-grid"><div class="flip-card" tabindex="0"><div class="flip-inner"><div class="flip-face flip-front"><span class="flip-icon">🏠</span><span class="flip-title">付订金锁定房价的买家</span></div><div class="flip-face flip-back flip-long"><span class="flip-term">Long Call</span><span class="flip-desc">看涨：花小钱锁定买入价，涨了才买</span></div></div></div><div class="flip-card" tabindex="0"><div class="flip-inner"><div class="flip-face flip-front"><span class="flip-icon">🔑</span><span class="flip-title">收了订金的业主</span></div><div class="flip-face flip-back flip-short"><span class="flip-term">Short Call</span><span class="flip-desc">收一笔钱，但涨了也只能按约定价卖</span></div></div></div><div class="flip-card" tabindex="0"><div class="flip-inner"><div class="flip-face flip-front"><span class="flip-icon">🛡️</span><span class="flip-title">给股票买保险的人</span></div><div class="flip-face flip-back flip-long"><span class="flip-term">Long Put</span><span class="flip-desc">看跌 / 避险：花小钱锁定卖出价</span></div></div></div><div class="flip-card" tabindex="0"><div class="flip-inner"><div class="flip-face flip-front"><span class="flip-icon">🏢</span><span class="flip-title">收保费的保险公司</span></div><div class="flip-face flip-back flip-short"><span class="flip-term">Short Put</span><span class="flip-desc">收一笔钱，但跌了要按约定价接货</span></div></div></div></div>
 
 <div class="callout tip">记住一句：<strong>买方付钱买"选择权"，卖方收钱担"义务"。</strong>买方最多亏掉付出的钱；卖方最多只赚收到的钱。</div>
 
@@ -117,6 +110,16 @@
 
 - 盈亏平衡点把「权利金成本」算进去，是判断盈亏的**真正分界线**。
 - 买方在行权价与盈亏平衡点之间，虽然有内在价值，但还不够覆盖权利金，仍然亏。
+
+---
+
+## 期权价值：时间就是成本
+
+<p class="lead">横轴是股价，纵深是剩余天数，高度是期权价值。<em>金色线</em>从 180 天扫到到期，越接近到期，就越贴近<strong>绿色的到期损益线</strong>：中间那块"凸起"就是会流失的时间值。</p>
+
+<div class="surface-wrap" data-prevent-swipe><div class="surface-3d"></div><div class="surface-controls"><button type="button" class="surface-btn is-active" data-surface-type="call">Call</button><button type="button" class="surface-btn" data-surface-type="put">Put</button></div><div class="surface-hint">拖动旋转 · 滚轮缩放</div></div>
+
+<p class="note">示例参数：行权价 100、IV 35%、无风险利率 5%，用 CRR 二叉树（美式）计算。</p>
 
 ---
 

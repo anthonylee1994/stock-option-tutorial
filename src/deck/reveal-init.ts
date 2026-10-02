@@ -2,6 +2,7 @@ import Reveal from "reveal.js";
 import RevealMarkdown from "reveal.js/plugin/markdown";
 import RevealNotes from "reveal.js/plugin/notes";
 import {buildSlides} from "./slides";
+import {initSurfaces} from "./surface-3d";
 
 export async function initDeck(): Promise<void> {
     buildSlides();
@@ -18,4 +19,6 @@ export async function initDeck(): Promise<void> {
         transition: "fade",
         plugins: [RevealMarkdown, RevealNotes],
     });
+
+    initSurfaces();
 }

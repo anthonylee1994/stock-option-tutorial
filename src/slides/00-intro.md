@@ -1,5 +1,6 @@
 <div class="cover">
 <h1>股票期权教程</h1>
+<div class="cover-stage"><div class="cover-card"><div class="cover-card-face cover-card-call"><span class="cover-card-tag">CALL · 认购</span><span class="cover-card-line">按约定价<strong>买入</strong>的权利</span><span class="cover-card-meta">行权价 · 到期日 · 权利金</span></div><div class="cover-card-face cover-card-put"><span class="cover-card-tag">PUT · 认沽</span><span class="cover-card-line">按约定价<strong>卖出</strong>的权利</span><span class="cover-card-meta">行权价 · 到期日 · 权利金</span></div></div></div>
 </div>
 
 ---

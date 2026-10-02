@@ -1,0 +1,61 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 360 240" font-family="system-ui, -apple-system, 'PingFang SC', 'Microsoft YaHei', sans-serif">
+    <style>
+        .draw { stroke-dasharray: 1; stroke-dashoffset: 1; animation: draw 6s ease-out infinite; }
+        .draw-late { stroke-dasharray: 1; stroke-dashoffset: 1; animation: draw-late 6s ease-out infinite; }
+        .pulse { animation: pulse 2.4s ease-in-out infinite; transform-box: fill-box; transform-origin: center; }
+        .appear { animation: appear 6s ease-out infinite; }
+        @keyframes draw { 0% { stroke-dashoffset: 1; } 30%, 100% { stroke-dashoffset: 0; } }
+        @keyframes draw-late { 0%, 20% { stroke-dashoffset: 1; } 50%, 100% { stroke-dashoffset: 0; } }
+        @keyframes pulse { 0%, 100% { transform: scale(1); } 50% { transform: scale(1.06); } }
+        @keyframes appear { 0%, 45% { opacity: 0; } 55%, 100% { opacity: 1; } }
+        @media (prefers-reduced-motion: reduce) {
+            * { animation: none !important; }
+            .draw, .draw-late { stroke-dashoffset: 0; }
+        }
+    </style>
+    <defs>
+        <linearGradient id="shield" x1="0" y1="0" x2="0" y2="1">
+            <stop offset="0" stop-color="#37d67a" />
+            <stop offset="1" stop-color="#1f9e55" />
+        </linearGradient>
+        <linearGradient id="safe-zone" x1="0" y1="0" x2="0" y2="1">
+            <stop offset="0" stop-color="#37d67a" stop-opacity="0.18" />
+            <stop offset="1" stop-color="#37d67a" stop-opacity="0" />
+        </linearGradient>
+    </defs>
+
+    <rect x="8" y="8" width="344" height="224" rx="14" fill="#151d30" stroke="#ffffff" stroke-opacity="0.1" />
+
+    <!-- 坐标轴 -->
+    <line x1="40" y1="200" x2="236" y2="200" stroke="#ffffff" stroke-opacity="0.15" />
+    <line x1="40" y1="30" x2="40" y2="200" stroke="#ffffff" stroke-opacity="0.15" />
+    <text x="30" y="58" fill="#9aabc7" font-size="11" text-anchor="end">100</text>
+    <text x="30" y="98" fill="#37d67a" font-size="11" font-weight="700" text-anchor="end">95</text>
+    <text x="30" y="190" fill="#ff5c7c" font-size="11" text-anchor="end">70</text>
+
+    <!-- 保底线 -->
+    <rect x="40" y="94" width="196" height="106" fill="url(#safe-zone)" />
+    <line x1="40" y1="94" x2="236" y2="94" stroke="#37d67a" stroke-width="2" stroke-dasharray="6 4" />
+    <text x="232" y="88" fill="#37d67a" font-size="11" font-weight="700" text-anchor="end">保底卖出价 95</text>
+
+    <!-- 没买保险：一路跌到 70 -->
+    <polyline class="draw-late" pathLength="1" points="44,54 80,62 110,58 140,94 176,140 206,168 232,186" fill="none" stroke="#ff5c7c" stroke-width="2.5" stroke-opacity="0.75" stroke-dasharray="1" stroke-linejoin="round" />
+    <!-- 买了 Put：跌到 95 就被托住 -->
+    <polyline class="draw" pathLength="1" points="44,54 80,62 110,58 140,94 232,94" fill="none" stroke="#4dabf7" stroke-width="3.5" stroke-linejoin="round" stroke-linecap="round" />
+
+    <g class="appear">
+        <rect x="52" y="160" width="84" height="22" rx="11" fill="#ff5c7c" fill-opacity="0.16" />
+        <text x="94" y="175" fill="#ff5c7c" font-size="11" text-anchor="middle">没保险：−30</text>
+        <rect x="52" y="108" width="84" height="22" rx="11" fill="#4dabf7" fill-opacity="0.16" />
+        <text x="94" y="123" fill="#4dabf7" font-size="11" text-anchor="middle">有保险：−8</text>
+    </g>
+
+    <!-- 盾牌 -->
+    <g class="pulse">
+        <path d="M296 40 L336 54 V98 C336 130 318 152 296 164 C274 152 256 130 256 98 V54 Z" fill="url(#shield)" />
+        <path d="M296 52 L325 62 V98 C325 122 312 140 296 150 Z" fill="#ffffff" fill-opacity="0.12" />
+        <path d="M278 100 l13 13 l24 -26" fill="none" stroke="#08131f" stroke-width="7" stroke-linecap="round" stroke-linejoin="round" />
+    </g>
+    <text x="296" y="188" fill="#e8eefb" font-size="13" font-weight="700" text-anchor="middle">Put = 保险</text>
+    <text x="296" y="206" fill="#9aabc7" font-size="11" text-anchor="middle">保费 3 元 / 股</text>
+</svg>

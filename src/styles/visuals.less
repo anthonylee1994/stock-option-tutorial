@@ -288,6 +288,14 @@
     border-radius: 14px;
     background: radial-gradient(600px 300px at 50% 0%, fade(@accent, 12%), transparent 70%), linear-gradient(180deg, @surface, darken(@bg, 2%));
     overflow: hidden;
+    transition:
+        border-color 0.3s ease,
+        box-shadow 0.3s ease;
+}
+
+.surface-wrap:hover {
+    border-color: fade(@accent, 50%);
+    box-shadow: 0 12px 36px rgba(0, 0, 0, 0.4);
 }
 
 .surface-3d {
@@ -316,6 +324,7 @@
     border: 1px solid @border;
     border-radius: 10px;
     background: fade(@bg, 75%);
+    backdrop-filter: blur(8px);
 }
 
 .surface-btn {
@@ -329,11 +338,18 @@
     font-weight: 700;
     cursor: pointer;
     transition:
-        background 0.2s ease,
-        color 0.2s ease;
+        background 0.25s ease,
+        color 0.25s ease,
+        transform 0.2s ease;
 
     &:hover {
         color: @text;
+        background: fade(@accent, 15%);
+        transform: scale(1.05);
+    }
+
+    &:active {
+        transform: scale(0.98);
     }
 
     &.is-active {
@@ -349,6 +365,11 @@
     color: @muted;
     font-size: 0.5em;
     pointer-events: none;
+    transition: opacity 0.3s ease;
+}
+
+.surface-wrap:hover .surface-hint {
+    opacity: 0.7;
 }
 
 html.print-pdf .surface-3d::after {

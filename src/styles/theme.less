@@ -41,6 +41,11 @@ body,
 
 .reveal .controls button:hover {
     color: @accent;
+    transform: scale(1.15);
+}
+
+.reveal .controls button:active {
+    transform: scale(0.95);
 }
 
 .reveal .progress {
@@ -53,6 +58,17 @@ body,
     background: linear-gradient(90deg, @accent, @long);
     box-shadow: 0 0 12px fade(@accent, 60%);
     transition: transform 0.6s cubic-bezier(0.22, 0.8, 0.24, 1);
+    animation: progress-glow 3s ease-in-out infinite;
+}
+
+@keyframes progress-glow {
+    0%,
+    100% {
+        box-shadow: 0 0 12px fade(@accent, 60%);
+    }
+    50% {
+        box-shadow: 0 0 18px fade(@accent, 80%), 0 0 24px fade(@long, 40%);
+    }
 }
 
 .reveal .slide-number {
@@ -228,6 +244,16 @@ body,
     border-radius: 0 10px 10px 0;
     background: linear-gradient(90deg, fade(@accent, 12%), fade(@surface, 60%) 70%);
     font-size: 0.9em;
+    transition:
+        border-color 0.2s ease,
+        transform 0.2s ease,
+        box-shadow 0.2s ease;
+}
+
+.callout:hover {
+    border-color: @accent;
+    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.25);
+    transform: translateX(2px);
 }
 
 .callout.tip {
@@ -235,14 +261,26 @@ body,
     background: linear-gradient(90deg, fade(@long, 12%), fade(@surface, 60%) 70%);
 }
 
+.callout.tip:hover {
+    border-color: @long;
+}
+
 .callout.warn {
     border-color: @warn;
     background: linear-gradient(90deg, fade(@warn, 12%), fade(@surface, 60%) 70%);
 }
 
+.callout.warn:hover {
+    border-color: @warn;
+}
+
 .callout.danger {
     border-color: @danger;
     background: linear-gradient(90deg, fade(@danger, 13%), fade(@surface, 60%) 70%);
+}
+
+.callout.danger:hover {
+    border-color: @danger;
 }
 
 .formula {
@@ -254,6 +292,18 @@ body,
     box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.04);
     font-family: @mono;
     font-size: 1em;
+    transition:
+        border-color 0.25s ease,
+        box-shadow 0.25s ease,
+        transform 0.2s ease;
+}
+
+.formula:hover {
+    border-color: fade(@gold, 35%);
+    box-shadow:
+        inset 0 1px 0 rgba(255, 255, 255, 0.04),
+        0 8px 24px rgba(0, 0, 0, 0.3);
+    transform: translateY(-1px);
 }
 
 .formula-line {

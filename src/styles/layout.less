@@ -48,6 +48,17 @@ body.calc-visible #calculator-root {
         border-radius: 50%;
         background: @long;
         box-shadow: 0 0 0 4px fade(@long, 18%);
+        animation: indicator-pulse 2.5s ease-in-out infinite;
+    }
+}
+
+@keyframes indicator-pulse {
+    0%,
+    100% {
+        box-shadow: 0 0 0 4px fade(@long, 18%);
+    }
+    50% {
+        box-shadow: 0 0 0 6px fade(@long, 8%);
     }
 }
 
@@ -103,6 +114,14 @@ body.calc-visible #calculator-root {
     border-radius: 14px;
     background: radial-gradient(160px 90px at 0% 0%, fade(@accent, 18%), transparent 70%), @surface-2;
     box-shadow: 0 8px 24px rgba(0, 0, 0, 0.25);
+    transition:
+        box-shadow 0.3s ease,
+        transform 0.3s ease;
+}
+
+.calc-result:hover {
+    box-shadow: 0 12px 32px rgba(0, 0, 0, 0.35);
+    transform: translateY(-1px);
 }
 
 .calc-result-block {

@@ -5,6 +5,7 @@ import {calcYears, computeGreeks, crr} from "./pricing";
 import {PayoffChart} from "./payoff-chart";
 import {presets} from "./presets";
 import type {CalcPreset, Position} from "./types";
+import {useValueFlash} from "./use-value-flash";
 
 const STEPS = 150;
 /** 杠杆率上限：深虚值期权临近到期时理论价趋近 0，杠杆会爆炸，超过此值只以「>9999」表示。 */
@@ -100,6 +101,17 @@ export const OptionCalculator = () => {
         return {price, greeks, distance};
     }, [preset, valuationDate, spot, strike, vol, rate, marketPremium]);
 
+    // 每個數值一變就著一下，提示「呢個數啱啱跟住郁」
+    const priceFlash = useValueFlash(result?.price ?? 0);
+    const distanceFlash = useValueFlash(result?.distance ?? 0);
+    const deltaFlash = useValueFlash(result?.greeks.delta ?? 0);
+    const gammaFlash = useValueFlash(result?.greeks.gamma ?? 0);
+    const vegaFlash = useValueFlash(result?.greeks.vega ?? 0);
+    const thetaFlash = useValueFlash(result?.greeks.theta ?? 0);
+    const rhoFlash = useValueFlash(result?.greeks.rho ?? 0);
+    const leverageFlash = useValueFlash(result ? (result.price > 0 ? spot / result.price : 0) : 0);
+    const yieldFlash = useValueFlash(strike > 0 ? (result?.price ?? 0) / strike : 0);
+
     if (!visible || !preset || !result) return null;
 
     const typeLabel = preset.optionType === "call" ? "Call" : "Put";
@@ -111,11 +123,11 @@ export const OptionCalculator = () => {
     const rangeEndDay = toDayNumber(rangeEnd);
     const sliderValue = clampDay(toDayNumber(valuationDate), rangeStartDay, rangeEndDay);
     const greeks = [
-        {label: "Delta", value: result.greeks.delta, hint: "标的资产价格每变动 1 个单位时，该期权持仓盈亏金额变化"},
-        {label: "Gamma", value: result.greeks.gamma, hint: "标的资产价格每变动 1 个单位时，该期权持仓的 Delta 值变化"},
-        {label: "Vega", value: result.greeks.vega, hint: "隐含波动率每变动 1% 时，该期权持仓盈亏金额变化"},
-        {label: "Theta", value: result.greeks.theta, hint: "时间每流逝一天，该期权持仓盈亏金额变化"},
-        {label: "Rho", value: result.greeks.rho, hint: "无风险利率每变动 1% 时，该期权持仓盈亏金额变化"},
+        {label: "Delta", value: result.greeks.delta, flash: deltaFlash, hint: "标的资产价格每变动 1 个单位时，该期权持仓盈亏金额变化"},
+        {label: "Gamma", value: result.greeks.gamma, flash: gammaFlash, hint: "标的资产价格每变动 1 个单位时，该期权持仓的 Delta 值变化"},
+        {label: "Vega", value: result.greeks.vega, flash: vegaFlash, hint: "隐含波动率每变动 1% 时，该期权持仓盈亏金额变化"},
+        {label: "Theta", value: result.greeks.theta, flash: thetaFlash, hint: "时间每流逝一天，该期权持仓盈亏金额变化"},
+        {label: "Rho", value: result.greeks.rho, flash: rhoFlash, hint: "无风险利率每变动 1% 时，该期权持仓盈亏金额变化"},
     ];
 
     return (
@@ -135,13 +147,13 @@ export const OptionCalculator = () => {
             <div className="calc-result">
                 <div className="calc-result-block">
                     <span className="calc-label">期权理论价格</span>
-                    <span className="calc-value">
+                    <span className={priceFlash ? "calc-value calc-flash" : "calc-value"}>
                         <AnimatedNumber value={result.price} />
                     </span>
                 </div>
                 <div className="calc-result-block calc-result-right">
                     <span className="calc-label">距当前价格</span>
-                    <span className={result.distance >= 0 ? "calc-distance calc-up" : "calc-distance calc-down"}>
+                    <span className={["calc-distance", result.distance >= 0 ? "calc-up" : "calc-down", distanceFlash ? "calc-flash" : ""].filter(Boolean).join(" ")}>
                         <AnimatedNumber value={result.distance} digits={2} percent />
                     </span>
                 </div>
@@ -151,7 +163,7 @@ export const OptionCalculator = () => {
                 {greeks.map(greek => (
                     <div className="calc-greek calc-greek-tip" data-tip={greek.hint} tabIndex={0} key={greek.label}>
                         <span className="calc-label">{greek.label}</span>
-                        <span className="calc-greek-value">
+                        <span className={greek.flash ? "calc-greek-value calc-flash" : "calc-greek-value"}>
                             <AnimatedNumber value={greek.value} />
                         </span>
                     </div>
@@ -170,13 +182,13 @@ export const OptionCalculator = () => {
             <div className="calc-metrics">
                 <div className={position === "long" ? "calc-metric calc-metric-active" : "calc-metric"}>
                     <span className="calc-label">杠杆率（买入）</span>
-                    <span className="calc-metric-value">
+                    <span className={leverageFlash ? "calc-metric-value calc-flash" : "calc-metric-value"}>
                         <AnimatedNumber value={leverage} digits={2} suffix=" 倍" max={MAX_LEVERAGE} />
                     </span>
                 </div>
                 <div className={position === "short" ? "calc-metric calc-metric-active" : "calc-metric"}>
                     <span className="calc-label">权利金收益率（卖出）</span>
-                    <span className="calc-metric-value">
+                    <span className={yieldFlash ? "calc-metric-value calc-flash" : "calc-metric-value"}>
                         <AnimatedNumber value={yieldPercent} digits={2} suffix="%" />
                     </span>
                 </div>

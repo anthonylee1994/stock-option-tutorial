@@ -61,6 +61,10 @@ export const PayoffChart = (props: PayoffChartProps) => {
     const lineClass = position === "long" ? "line-long" : "line-short";
     const dotClass = position === "long" ? "dot-long" : "dot-short";
     const drawKey = `${optionType}-${position}-${strike}`;
+    // 彗尾行嘅路徑同折線一樣，所以任何參數改動都會即刻同步。
+    // 用 CSS offset-path／offset-rotate，同四式損益圖同一套做法；
+    // （同樣效果嘅 SVG animateMotion rotate="auto" 喺瀏覽器唔會反映落元素度。）
+    const tracePath = `path('M ${linePoints.split(" ").join(" L ")}')`;
 
     return (
         <React.Fragment>
@@ -71,6 +75,15 @@ export const PayoffChart = (props: PayoffChartProps) => {
                 {showBreakeven ? <line className="breakeven-line" x1={xOf(breakeven)} y1={PAD_TOP - 4} x2={xOf(breakeven)} y2={HEIGHT - PAD_BOTTOM} /> : null}
                 <polyline key={drawKey} className={`payoff-draw ${lineClass}`} pathLength={1} points={linePoints} fill="none" strokeWidth="3" strokeLinejoin="round" />
                 <circle key={`dot-${drawKey}`} className={`payoff-dot ${dotClass}`} cx={xOf(spot)} cy={yOf(spotPayoff)} r="3.5" />
+                <circle className={`spot-glow ${dotClass}`} cx={xOf(spot)} cy={yOf(spotPayoff)} r="4" />
+                <defs>
+                    <linearGradient id="trace-fade" x1="0" y1="0" x2="1" y2="0">
+                        <stop offset="0" stopColor="#ffffff" stopOpacity="0" />
+                        <stop offset="0.45" stopColor="#cfe4ff" stopOpacity="0.5" />
+                        <stop offset="1" stopColor="#ffffff" stopOpacity="0.95" />
+                    </linearGradient>
+                </defs>
+                <ellipse className="trace" key={tracePath} rx="9" ry="2.1" fill="url(#trace-fade)" style={{offsetPath: tracePath}} />
                 {showBreakeven ? (
                     <text className="mark-label" x={clampLabelX(xOf(breakeven))} y="11" textAnchor="middle">
                         平衡点 {breakeven.toFixed(Number.isInteger(breakeven) ? 0 : 1)}

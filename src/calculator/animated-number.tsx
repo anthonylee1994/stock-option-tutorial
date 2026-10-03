@@ -1,20 +1,11 @@
 import React from "react";
 import {formatNumber, formatPercent} from "./format";
-
-const DURATION = 480;
-
-function prefersReducedMotion(): boolean {
-    return typeof window !== "undefined" && window.matchMedia("(prefers-reduced-motion: reduce)").matches;
-}
-
-function easeOutCubic(t: number): number {
-    return 1 - Math.pow(1 - t, 3);
-}
+import {easeOutCubic, prefersReducedMotion, TWEEN_DURATION} from "./motion-preference";
 
 /**
  * 由上一個值滾動到 target（ease-out），第一次 mount 由 0 開始數上去。
  */
-export function useTweenedNumber(target: number, duration = DURATION): number {
+export function useTweenedNumber(target: number, duration = TWEEN_DURATION): number {
     const [value, setValue] = React.useState(0);
     const valueRef = React.useRef(0);
 

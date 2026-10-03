@@ -19,6 +19,10 @@ const DEPTH = 7;
 const VALUE_SCALE = 0.075;
 
 const SWEEP_SECONDS = 7;
+/** 曲面由平面「升起」嘅時間 */
+const INTRO_SECONDS = 1.2;
+/** 切換 Call / Put 時曲面壓扁再彈返起嘅時間 */
+const SWITCH_SECONDS = 0.5;
 
 const COLOR_LOW = new THREE.Color("#1d4f8f");
 const COLOR_MID = new THREE.Color("#4dabf7");
@@ -177,11 +181,33 @@ export function createSurface(container: HTMLElement, getScale: () => number): S
     }
 
     let values: Float32Array = new Float32Array(0);
+    let maxValue = 1;
     const scratch = new THREE.Color();
+
+    // 出場時曲面由平「升起」；切換 Call / Put 時壓扁再彈返
+    let introAt = prefersReducedMotion() ? -Infinity : performance.now();
+    let burstAt = -Infinity;
+    const scaleFor = (now: number): number => {
+        const intro = (now - introAt) / 1000 / INTRO_SECONDS;
+        const target = intro >= 1 ? 1 : 1 - Math.pow(1 - Math.max(intro, 0), 3);
+        const burst = burstAt >= 0 ? (now - burstAt) / 1000 / SWITCH_SECONDS : 1;
+        const spring = burst >= 1 ? 1 : 0.45 + 0.55 * Math.sin(Math.PI * burst);
+        return target * spring;
+    };
+
+    // 曲面高度、到期線、掃描線都要跟同一個 scale，否則會散開
+    const applyScale = (scale: number) => {
+        for (let j = 0; j <= DAY_SEGMENTS; j++) {
+            for (let i = 0; i <= SPOT_SEGMENTS; i++) {
+                positions[j * (SPOT_SEGMENTS + 1) * 3 + i * 3 + 1] = values[j * (SPOT_SEGMENTS + 1) + i] * VALUE_SCALE * scale;
+            }
+        }
+        geometry.attributes.position.needsUpdate = true;
+    };
 
     const applyType = (type: OptionType) => {
         values = computeGrid(type);
-        const maxValue = values.reduce((max, value) => Math.max(max, value), 0);
+        maxValue = values.reduce((max, value) => Math.max(max, value), 0);
         for (let j = 0; j <= DAY_SEGMENTS; j++) {
             for (let i = 0; i <= SPOT_SEGMENTS; i++) {
                 const index = j * (SPOT_SEGMENTS + 1) + i;
@@ -204,7 +230,7 @@ export function createSurface(container: HTMLElement, getScale: () => number): S
     };
 
     // 由 180 日扫到 0 日：曲线慢慢贴近到期损益
-    const updateSweep = (progress: number) => {
+    const updateSweep = (progress: number, scale: number) => {
         const row = (1 - progress) * DAY_SEGMENTS;
         const j0 = Math.floor(row);
         const j1 = Math.min(j0 + 1, DAY_SEGMENTS);
@@ -213,7 +239,7 @@ export function createSurface(container: HTMLElement, getScale: () => number): S
             const v0 = values[j0 * (SPOT_SEGMENTS + 1) + i];
             const v1 = values[j1 * (SPOT_SEGMENTS + 1) + i];
             const value = v0 + (v1 - v0) * mix;
-            sweepPoints[i].set(xOfSpot(spotAt(i)), value * VALUE_SCALE + 0.04, zOfDays(daysAt(row)));
+            sweepPoints[i].set(xOfSpot(spotAt(i)), value * VALUE_SCALE * scale + 0.04, zOfDays(daysAt(row)));
         }
         sweepLine.geometry.dispose();
         sweepLine.geometry = makeTube(sweepPoints, 0.05);
@@ -233,14 +259,25 @@ export function createSurface(container: HTMLElement, getScale: () => number): S
 
     let frame = 0;
     let running = false;
-    const startTime = performance.now();
+    // 掃描線由 180 日掃到 0 日：入場時掃描同升起同步，之後各自循環
+    const sweepStart = () => introAt + INTRO_SECONDS * 1000 * 0.35;
 
     const render = (now: number) => {
         if (!running) return;
-        const progress = prefersReducedMotion() ? 0.5 : (((now - startTime) / 1000) % SWEEP_SECONDS) / SWEEP_SECONDS;
-        updateSweep(progress);
+        const scale = scaleFor(now);
+        applyScale(scale);
+        const progress = prefersReducedMotion() ? 0.5 : (((now - sweepStart()) / 1000) % SWEEP_SECONDS) / SWEEP_SECONDS;
+        updateSweep(progress < 0 ? 0 : progress, scale);
         controls.update();
         renderer.render(scene, camera);
+
+        // 升起／切換動畫做完後，如果仲有自動旋轉就繼續跑，
+        // 否則停低唔好白燒 GPU（reveal 一離開呢版就會 stop()）
+        const settled = now - introAt >= INTRO_SECONDS * 1000 && (burstAt < 0 || now - burstAt >= SWITCH_SECONDS * 1000);
+        if (settled && !controls.autoRotate) {
+            running = false;
+            return;
+        }
         frame = requestAnimationFrame(render);
     };
 
@@ -250,11 +287,27 @@ export function createSurface(container: HTMLElement, getScale: () => number): S
     return {
         setType(type) {
             applyType(type);
+            if (prefersReducedMotion()) {
+                applyScale(1);
+                return;
+            }
+            // 切換時壓扁再彈返，配合掃描線重播一次
+            burstAt = performance.now();
+            introAt = burstAt - INTRO_SECONDS * 1000;
+            if (!running) {
+                running = true;
+                frame = requestAnimationFrame(render);
+            }
         },
         start() {
-            if (running) return;
+            if (!prefersReducedMotion()) {
+                // 每次重新入到呢一版都由「升起」開始，順手重播掃描線
+                introAt = performance.now();
+                burstAt = -Infinity;
+            }
             running = true;
             resize();
+            cancelAnimationFrame(frame);
             frame = requestAnimationFrame(render);
         },
         stop() {

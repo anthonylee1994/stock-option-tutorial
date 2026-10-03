@@ -67,7 +67,9 @@ body,
         box-shadow: 0 0 12px fade(@accent, 60%);
     }
     50% {
-        box-shadow: 0 0 18px fade(@accent, 80%), 0 0 24px fade(@long, 40%);
+        box-shadow:
+            0 0 18px fade(@accent, 80%),
+            0 0 24px fade(@long, 40%);
     }
 }
 
@@ -450,6 +452,34 @@ body,
     stroke: @short;
 }
 
+// 沿損益線行走嘅彗尾
+// offset-path 由每張圖自己嘅 polyline 算出（inline style，見 slides/01-four-positions.md），
+// 令光點一定貼住嗰條線；計算器嗰邊線形會變，改用 SVG animateMotion。
+.payoff .trace,
+.calc-payoff .trace {
+    // auto：彗尾要跟住條線嘅切線轉；寫死 0deg 嘅話，斜線上面會變成一嚿橫嘅白色
+    offset-rotate: auto;
+    rx: 9;
+    ry: 2.1;
+    opacity: 0;
+    pointer-events: none;
+}
+
+// 現價點外面嘅擴散圈
+.calc-payoff .spot-glow {
+    fill: none;
+    stroke-width: 2;
+    pointer-events: none;
+}
+
+.calc-payoff .spot-glow.dot-long {
+    stroke: @long;
+}
+
+.calc-payoff .spot-glow.dot-short {
+    stroke: @short;
+}
+
 .payoff .axis {
     stroke: @border;
 }
@@ -487,6 +517,8 @@ body,
 }
 
 .stat-card {
+    position: relative;
+    overflow: hidden;
     padding: 0.55em 0.7em;
     border: 1px solid @border;
     border-radius: 12px;
@@ -497,10 +529,37 @@ body,
         box-shadow 0.25s ease;
 }
 
+// 滑鼠經過時一道光由左掃到右
+.stat-card::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    z-index: 0;
+    background: linear-gradient(100deg, transparent 35%, fade(@accent, 16%) 50%, transparent 65%);
+    background-size: 260% 100%;
+    background-position: 130% 0;
+    opacity: 0;
+    pointer-events: none;
+    transition:
+        background-position 0.75s cubic-bezier(0.22, 0.8, 0.24, 1),
+        opacity 0.25s ease;
+}
+
 .stat-card:hover {
     border-color: fade(@accent, 45%);
     box-shadow: 0 10px 26px rgba(0, 0, 0, 0.35);
     transform: translateY(-3px);
+}
+
+.stat-card:hover::before {
+    opacity: 1;
+    background-position: -30% 0;
+}
+
+.stat-card .stat-label,
+.stat-card .stat-value {
+    position: relative;
+    z-index: 1;
 }
 
 .stat-card .stat-label {

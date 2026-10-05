@@ -11,7 +11,7 @@
 | Part 2 | Long Call / Long Put / Short Put 的月份与行权价策略 + 例子                            |
 | Part 3 | 速查卡、相关笔记、结束                                                                |
 
-合计 29 页。术语统一使用大陆用法（行权价、权利金、实值/虚值、隐含波动率）。
+合计 30 页。术语统一使用大陆用法（行权价、权利金、实值/虚值、隐含波动率）。
 
 ## 计算器（美式期权）
 
@@ -19,9 +19,24 @@
 - 输入：**当日期为（附日期滑杆，可拖到到期日看时间衰减）/ 标的资产价格 / 行权价 / 隐含波动率 / 无风险利率**（皆可编辑，行权价亦可在页面上临时调）。
 - 输出：**期权理论价格、距当前价格、Delta / Gamma / Vega / Theta / Rho**。
 - 图表：**到期损益图**，可在「买入 Long / 卖出 Short」之间切换，标出行权价、打和点与现价位置。
-- 指标：**杠杆率 = 标的价 ÷ 期权理论价格**（Long 侧）与 **厘数 = 期权理论价格 ÷ 行权价**（Short 侧），两者都随 IV／日期／标的价即时更新，按当前持仓方向高亮。
+- 指标：**杠杆率 = 标的价 ÷ 期权理论价格**（Long 侧）与 **权利金收益率 = 期权理论价格 ÷ 行权价**（Short 侧），两者都随 IV／日期／标的价即时更新，按当前持仓方向高亮。
 - 定价引擎：**美式 CRR 二叉树**（含提前行权）；Greeks 由二叉树首两层与重定价求得，纯 TypeScript、无额外依赖。
 - 各页的合约、默认参数写在 `src/calculator/presets.ts`（与幻灯片扁平顺序一一对应，`undefined` 表示该页隐藏计算器）。
+- **不做欧式定价**：没有 Black-Scholes，也没有「美式 / 欧式」模型切换。
+
+## 测试
+
+```bash
+pnpm test       # node --test，跑 tests/pricing.test.ts（零额外依赖）
+```
+
+`tests/pricing.test.ts` 校验计价引擎：对照 Hull 教材值（美式 Put 6.0896）、Black-Scholes 闭式解（无股息美式 Call ＝ 欧式 Call、五个 Greeks），以及 `r = 0` 时的 Put-Call Parity；另外守着「`presets` 条数 = 幻灯片页数」这条容易悄悄坏掉的约束。
+
+`tests/tsconfig.json` 只服务测试目录（`types: ["node"]` + `allowImportingTsExtensions`，因为 Node 直接跑 `.ts` 时 import 必须带扩展名）。它**没有**挂进根 `tsconfig.json` 的 `references`，所以 `pnpm build` 的 `tsc -b` 不会连测试一起检查——测试自己单独查：
+
+```bash
+npx tsc -p tests
+```
 
 ## 开发
 
@@ -30,6 +45,7 @@ pnpm install
 pnpm dev        # 开发服务器
 pnpm build      # tsc -b + vite build
 pnpm preview    # 预览构建产物
+pnpm test       # node --test tests/**/*.test.ts
 pnpm typecheck  # tsc -b
 pnpm format     # prettier --write .
 pnpm lint       # oxlint（仅参考，不纳入验收）
@@ -48,7 +64,7 @@ pnpm lint       # oxlint（仅参考，不纳入验收）
 | 计算器  | 面板滑入；数值一变动就闪一下（理论价、距离、五个 Greeks、杠杆率、收益率全部联动）        |
 | 3D 曲面 | 入场由平面升起；切换 Call / Put 时压扁再弹起，同时重播 180 天→到期的时间扫描线           |
 
-React 侧的数值滚动在 `src/calculator/animated-number.tsx`：`useTweenedNumber` 负责补间，`useValueFlash` 负责触发上面「闪一下」的类名。
+React 侧的数值滚动在 `src/calculator/animated-number.tsx`：`useTweenedNumber` 负责补间；`useValueFlash`（`src/calculator/use-value-flash.ts`）负责触发上面「闪一下」的类名。3D 曲面在 `src/deck/surface-3d.ts` + `src/deck/surface-scene.ts`。
 
 ## 目录
 
@@ -59,11 +75,15 @@ src/
   deck/
     reveal-init.ts          # reveal.js 配置
     slides.ts               # 以 ?raw 载入 Markdown，组装成 section
+    surface-3d.ts           # 3D 波动率曲面的挂载与生命周期
+    surface-scene.ts        # three.js 场景
   calculator/
     option-calculator.tsx   # 计算器 UI
     payoff-chart.tsx        # 到期损益图（内联 SVG）
-    animated-number.tsx     # 数值滚动动画
-    pricing.ts              # CRR / Black-Scholes / Greeks
+    animated-number.tsx     # 数值滚动补间
+    use-value-flash.ts      # 数值变动「闪一下」
+    motion-preference.ts    # 减少动态效果偏好
+    pricing.ts              # 美式 CRR 二叉树 / Greeks
     presets.ts              # 各页默认参数
     format.ts               # 数字 / 货币格式化
     types.ts
@@ -77,7 +97,11 @@ src/
     theme.less              # 主题与排版
     layout.less             # 两栏布局 + 计算器面板
     motion.less             # 过渡 / 动画
+    visuals.less            # 卡片 / 翻转卡 / 公式
     print.less              # 打印 / PDF
+tests/
+  tsconfig.json             # 测试目录自己的 TS 配置（不挂在根 references 上）
+  pricing.test.ts           # 计价引擎正确性自测
 ```
 
 ## 路由
@@ -131,7 +155,9 @@ src/
 
 ## 导出 PDF
 
-访问 `?print-pdf`（例如 `http://localhost:5173/?print-pdf`），再用浏览器打印为 PDF。打印时右侧计算器会自动隐藏。
+访问 `?print-pdf`（例如 `http://localhost:5173/?print-pdf`），再用浏览器打印为 PDF。打印时右侧计算器会自动隐藏（`src/styles/print.less`）。
+
+> ⚠️ 这条路径**还没有实机验证过**：reveal 6 已内置 `.print-pdf` 的排版样式，理论上开箱可用，但「一页一张、不截断」没实测。要交付 PDF 前先自己印一次。
 
 ## 声明
 
